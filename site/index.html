@@ -1,0 +1,2761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drink Bombs — Drop. Fizz. Drink.</title>
+    <meta name="description" content="Craft cocktails in 3 seconds. Drop a Drink Bomb into sparkling water and watch the magic bloom. No bartending required.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            /* Clean white palette with flavor accent pops */
+            --ruby: #E8364F;
+            --ruby-deep: #C02942;
+            --amber: #E8943A;
+            --amber-gold: #F0A742;
+            --amber-light: #FFF4E0;
+            --emerald: #34C470;
+            --emerald-deep: #22A85A;
+            --espresso: #5C3D2E;
+            --espresso-light: #8B6550;
+
+            /* Flavor accent pops */
+            --margarita: #4ADE80;
+            --cosmo: #F472B6;
+            --mule: #FB923C;
+            --old-fashioned: #FBBF24;
+            --espresso-accent: #A17256;
+
+            /* White-dominant surfaces */
+            --cream: #FFFFFF;
+            --cream-warm: #FAFAFA;
+            --off-white: #F5F5F5;
+            --surface-subtle: #F8F8F8;
+            --ink: #1C1C1E;
+            --ink-light: #6B7280;
+
+            /* Typography */
+            --font-display: 'Unbounded', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+
+            /* Spacing */
+            --section-pad: clamp(60px, 10vw, 120px);
+            --side-pad: clamp(20px, 5vw, 80px);
+        }
+
+        *, *::before, *::after {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: var(--font-body);
+            color: var(--ink);
+            background: #FFFFFF;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        /* ============================================
+           UTILITY & ANIMATIONS
+           ============================================ */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0,0,0,0);
+            border: 0;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(3deg); }
+        }
+
+        @keyframes float-reverse {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(-3deg); }
+        }
+
+        @keyframes fizz-up {
+            0% { transform: translateY(0) scale(1); opacity: 0.8; }
+            50% { opacity: 0.6; }
+            100% { transform: translateY(-280px) scale(0.3); opacity: 0; }
+        }
+
+        @keyframes fizz-up-tall {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.7; }
+            50% { transform: translateY(-180px) translateX(10px) scale(0.7); opacity: 0.5; }
+            100% { transform: translateY(-400px) translateX(-6px) scale(0.2); opacity: 0; }
+        }
+
+        @keyframes fizz-up-drift {
+            0% { transform: translateY(0) translateX(0) scale(1); opacity: 0.6; }
+            30% { transform: translateY(-80px) translateX(15px) scale(0.9); }
+            60% { transform: translateY(-200px) translateX(-10px) scale(0.6); opacity: 0.4; }
+            100% { transform: translateY(-350px) translateX(6px) scale(0.15); opacity: 0; }
+        }
+
+        @keyframes bloom-in {
+            0% { transform: scale(0.8); opacity: 0; }
+            60% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes slide-up {
+            0% { transform: translateY(60px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes wave-drift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        @keyframes spin-slow {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(232, 54, 79, 0.2); }
+            50% { box-shadow: 0 0 40px 10px rgba(232, 54, 79, 0.08); }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           ANNOUNCEMENT BAR
+           ============================================ */
+        .announcement-bar {
+            background: var(--ink);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 10px var(--side-pad);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .announcement-bar span {
+            color: var(--margarita);
+        }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.06);
+            padding: 0 var(--side-pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+
+        .nav-logo {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+        }
+
+        .nav-logo .logo-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: var(--cosmo);
+            border-radius: 50%;
+            margin-left: 2px;
+            vertical-align: super;
+            font-size: 0.6em;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 32px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--cosmo);
+        }
+
+        .nav-cta {
+            background: var(--ink);
+            color: #FFFFFF !important;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 700 !important;
+            transition: all 0.3s !important;
+        }
+
+        .nav-cta:hover {
+            background: var(--ruby) !important;
+            color: #FFFFFF !important;
+            transform: scale(1.05);
+        }
+
+        .nav-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 30px;
+            height: 20px;
+            position: relative;
+        }
+
+        .nav-mobile-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            position: absolute;
+            left: 0;
+            transition: all 0.3s;
+        }
+
+        .nav-mobile-toggle span:nth-child(1) { top: 0; }
+        .nav-mobile-toggle span:nth-child(2) { top: 9px; }
+        .nav-mobile-toggle span:nth-child(3) { top: 18px; }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            position: relative;
+            min-height: 90vh;
+            background: #FFFFFF;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            padding: var(--section-pad) var(--side-pad);
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -30%;
+            right: -15%;
+            width: 60%;
+            height: 150%;
+            background: radial-gradient(ellipse, rgba(244,114,182,0.08) 0%, rgba(74,222,128,0.05) 40%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -20%;
+            left: -10%;
+            width: 50%;
+            height: 120%;
+            background: radial-gradient(ellipse, rgba(251,191,36,0.06) 0%, rgba(251,146,60,0.04) 40%, transparent 70%);
+            pointer-events: none;
+        }
+
+        /* Decorative floating circles — flavor-colored */
+        .hero-circle {
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-circle-1 {
+            width: 300px;
+            height: 300px;
+            top: -80px;
+            left: -80px;
+            border: 2px solid rgba(244,114,182,0.12);
+            background: rgba(244,114,182,0.03);
+            animation: float 8s ease-in-out infinite;
+        }
+
+        .hero-circle-2 {
+            width: 150px;
+            height: 150px;
+            bottom: 10%;
+            right: 5%;
+            background: rgba(74,222,128,0.06);
+            border: 2px solid rgba(74,222,128,0.1);
+            animation: float-reverse 6s ease-in-out infinite;
+        }
+
+        .hero-circle-3 {
+            width: 60px;
+            height: 60px;
+            top: 20%;
+            right: 30%;
+            background: var(--old-fashioned);
+            opacity: 0.12;
+            animation: float 5s ease-in-out infinite 1s;
+        }
+
+        /* Fizz particles — multi-flavor colors */
+        .fizz-particle {
+            position: absolute;
+            background: rgba(244,114,182,0.35);
+            border-radius: 50%;
+            animation: fizz-up 3s ease-out infinite;
+            pointer-events: none;
+        }
+        .fizz-particle:nth-child(odd) { background: rgba(74,222,128,0.3); }
+        .fizz-particle:nth-child(3n) { background: rgba(251,191,36,0.35); }
+        .fizz-particle:nth-child(5n) { background: rgba(251,146,60,0.3); }
+
+        /* Small bubbles (3-4px) */
+        .fizz-particle:nth-child(1)  { left: 3%;  bottom: 8%;  width: 3px; height: 3px; animation-delay: 0s;    animation-duration: 2.4s; opacity: 0.5; }
+        .fizz-particle:nth-child(2)  { left: 8%;  bottom: 15%; width: 4px; height: 4px; animation-delay: 0.7s;  animation-duration: 2.8s; }
+        .fizz-particle:nth-child(3)  { left: 12%; bottom: 5%;  width: 3px; height: 3px; animation-delay: 1.4s;  animation-duration: 2.2s; opacity: 0.6; }
+        .fizz-particle:nth-child(4)  { left: 18%; bottom: 22%; width: 4px; height: 4px; animation-delay: 0.3s;  animation-duration: 3.0s; }
+        .fizz-particle:nth-child(5)  { left: 22%; bottom: 10%; width: 3px; height: 3px; animation-delay: 2.1s;  animation-duration: 2.5s; opacity: 0.4; }
+
+        /* Medium bubbles (5-7px) */
+        .fizz-particle:nth-child(6)  { left: 15%; bottom: 18%; width: 6px; height: 6px; animation-delay: 0.5s;  animation-duration: 2.6s; }
+        .fizz-particle:nth-child(7)  { left: 27%; bottom: 12%; width: 5px; height: 5px; animation-delay: 1.1s;  animation-duration: 3.2s; }
+        .fizz-particle:nth-child(8)  { left: 33%; bottom: 6%;  width: 7px; height: 7px; animation-delay: 0.2s;  animation-duration: 2.9s; }
+        .fizz-particle:nth-child(9)  { left: 38%; bottom: 25%; width: 5px; height: 5px; animation-delay: 1.8s;  animation-duration: 3.4s; opacity: 0.5; }
+        .fizz-particle:nth-child(10) { left: 42%; bottom: 15%; width: 6px; height: 6px; animation-delay: 0.9s;  animation-duration: 2.7s; }
+        .fizz-particle:nth-child(11) { left: 48%; bottom: 8%;  width: 5px; height: 5px; animation-delay: 1.5s;  animation-duration: 3.1s; }
+        .fizz-particle:nth-child(12) { left: 55%; bottom: 20%; width: 6px; height: 6px; animation-delay: 0.4s;  animation-duration: 2.5s; }
+        .fizz-particle:nth-child(13) { left: 62%; bottom: 12%; width: 7px; height: 7px; animation-delay: 2.3s;  animation-duration: 3.3s; }
+        .fizz-particle:nth-child(14) { left: 68%; bottom: 5%;  width: 5px; height: 5px; animation-delay: 0.6s;  animation-duration: 2.8s; }
+
+        /* Large bubbles (8-12px) — use taller/drifty animations, flavor colors */
+        .fizz-particle:nth-child(15) { left: 10%; bottom: 12%; width: 10px; height: 10px; animation: fizz-up-tall 3.5s ease-out infinite 1.0s;  background: rgba(74,222,128,0.2); }
+        .fizz-particle:nth-child(16) { left: 30%; bottom: 18%; width: 8px;  height: 8px;  animation: fizz-up-drift 3.0s ease-out infinite 0.1s; background: rgba(244,114,182,0.22); }
+        .fizz-particle:nth-child(17) { left: 50%; bottom: 8%;  width: 12px; height: 12px; animation: fizz-up-tall 3.8s ease-out infinite 1.6s;  background: rgba(251,191,36,0.18); }
+        .fizz-particle:nth-child(18) { left: 72%; bottom: 22%; width: 9px;  height: 9px;  animation: fizz-up-drift 3.2s ease-out infinite 0.8s; background: rgba(251,146,60,0.2); }
+        .fizz-particle:nth-child(19) { left: 85%; bottom: 10%; width: 11px; height: 11px; animation: fizz-up-tall 3.6s ease-out infinite 2.0s;  background: rgba(161,114,86,0.18); }
+
+        /* Right side cluster (near product) */
+        .fizz-particle:nth-child(20) { left: 75%; bottom: 15%; width: 4px; height: 4px; animation-delay: 0.3s;  animation-duration: 2.4s; }
+        .fizz-particle:nth-child(21) { left: 78%; bottom: 8%;  width: 6px; height: 6px; animation-delay: 1.2s;  animation-duration: 2.9s; }
+        .fizz-particle:nth-child(22) { left: 82%; bottom: 20%; width: 3px; height: 3px; animation-delay: 0.7s;  animation-duration: 2.6s; opacity: 0.6; }
+        .fizz-particle:nth-child(23) { left: 88%; bottom: 12%; width: 5px; height: 5px; animation-delay: 1.9s;  animation-duration: 3.1s; }
+        .fizz-particle:nth-child(24) { left: 92%; bottom: 6%;  width: 7px; height: 7px; animation-delay: 0.5s;  animation-duration: 3.4s; background: rgba(255,255,255,0.3); }
+        .fizz-particle:nth-child(25) { left: 95%; bottom: 18%; width: 4px; height: 4px; animation-delay: 1.4s;  animation-duration: 2.7s; }
+
+        /* Extra scattered mid-field — spread across full hero height */
+        .fizz-particle:nth-child(26) { left: 20%; bottom: 40%; width: 4px; height: 4px; animation-delay: 2.5s;  animation-duration: 2.3s; opacity: 0.45; }
+        .fizz-particle:nth-child(27) { left: 45%; bottom: 45%; width: 5px; height: 5px; animation-delay: 0.1s;  animation-duration: 2.6s; opacity: 0.5; }
+        .fizz-particle:nth-child(28) { left: 58%; bottom: 50%; width: 6px; height: 6px; animation-delay: 1.7s;  animation-duration: 3.0s; opacity: 0.4; }
+        .fizz-particle:nth-child(29) { left: 65%; bottom: 2%;  width: 4px; height: 4px; animation-delay: 0.9s;  animation-duration: 2.2s; }
+        .fizz-particle:nth-child(30) { left: 5%;  bottom: 55%; width: 5px; height: 5px; animation-delay: 1.3s;  animation-duration: 3.5s; opacity: 0.4; }
+
+        /* Flavor accent bubbles — some with drift */
+        .fizz-particle:nth-child(31) { left: 25%; bottom: 14%; width: 6px; height: 6px; animation: fizz-up-drift 3.0s ease-out infinite 0.8s; background: rgba(232,54,79,0.2); }
+        .fizz-particle:nth-child(32) { left: 52%; bottom: 22%; width: 8px; height: 8px; animation: fizz-up-tall 3.4s ease-out infinite 1.5s;  background: rgba(74,222,128,0.2); }
+        .fizz-particle:nth-child(33) { left: 80%; bottom: 28%; width: 5px; height: 5px; animation-delay: 0.2s;  animation-duration: 2.8s; background: rgba(244,114,182,0.25); }
+        .fizz-particle:nth-child(34) { left: 37%; bottom: 3%;  width: 7px; height: 7px; animation: fizz-up-drift 3.2s ease-out infinite 2.2s; background: rgba(251,191,36,0.2); }
+        .fizz-particle:nth-child(35) { left: 90%; bottom: 25%; width: 4px; height: 4px; animation-delay: 1.0s;  animation-duration: 2.5s; background: rgba(251,146,60,0.25); }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(40px, 6vw, 80px);
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        .hero-text {
+            color: var(--ink);
+        }
+
+        .hero-tagline {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ruby);
+            margin-bottom: 20px;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .hero-headline {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(2.8rem, 6vw, 5.5rem);
+            line-height: 1.0;
+            letter-spacing: -0.03em;
+            margin-bottom: 24px;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+        }
+
+        .hero-headline em {
+            font-style: normal;
+            position: relative;
+            display: inline-block;
+        }
+
+        .hero-headline em::after {
+            content: '';
+            position: absolute;
+            bottom: 2px;
+            left: 0;
+            width: 100%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--cosmo), var(--mule));
+            border-radius: 3px;
+        }
+
+        .hero-subline {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.5vw, 1.25rem);
+            line-height: 1.7;
+            color: var(--ink-light);
+            max-width: 480px;
+            margin-bottom: 36px;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+            flex-wrap: wrap;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--ink);
+            color: #FFFFFF;
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px) scale(1.03);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+            background: var(--ruby);
+        }
+
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 16px 24px;
+            border: 2px solid rgba(0,0,0,0.12);
+            border-radius: 100px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: transparent;
+        }
+
+        .btn-secondary:hover {
+            border-color: var(--ink);
+            background: var(--surface-subtle);
+        }
+
+        .hero-visual {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            animation: bloom-in 1s cubic-bezier(0.16, 1, 0.3, 1) 0.4s both;
+        }
+
+        .hero-product-img {
+            width: 100%;
+            max-width: 420px;
+            filter: drop-shadow(0 30px 60px rgba(0,0,0,0.12));
+            transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .hero-product-img:hover {
+            transform: scale(1.04) rotate(-1deg);
+        }
+
+        .hero-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--ink);
+            color: #FFFFFF;
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.7rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            padding: 14px 20px;
+            border-radius: 50%;
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.2;
+            animation: spin-slow 20s linear infinite;
+        }
+
+        /* ============================================
+           WAVE DIVIDER
+           ============================================ */
+        .wave-divider {
+            position: relative;
+            height: 80px;
+            overflow: hidden;
+        }
+
+        .wave-divider svg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            animation: wave-drift 12s linear infinite;
+        }
+
+        .wave-ruby-to-cream { background: #FFFFFF; }
+        .wave-ruby-to-cream svg path { fill: #FFFFFF; }
+
+        .wave-cream-to-amber { background: #FFFFFF; }
+        .wave-cream-to-amber svg path { fill: var(--surface-subtle); }
+
+        .wave-amber-to-cream { background: var(--surface-subtle); }
+        .wave-amber-to-cream svg path { fill: #FFFFFF; }
+
+        .wave-cream-to-emerald { background: #FFFFFF; }
+        .wave-cream-to-emerald svg path { fill: var(--ink); }
+
+        .wave-emerald-to-cream { background: var(--ink); }
+        .wave-emerald-to-cream svg path { fill: #FFFFFF; }
+
+        .wave-cream-to-espresso { background: #FFFFFF; }
+        .wave-cream-to-espresso svg path { fill: var(--surface-subtle); }
+
+        .wave-espresso-to-cream { background: var(--surface-subtle); }
+        .wave-espresso-to-cream svg path { fill: #FFFFFF; }
+
+        .wave-cream-to-ink { background: #FFFFFF; }
+        .wave-cream-to-ink svg path { fill: var(--ink); }
+
+        /* ============================================
+           "AS SEEN" / SOCIAL PROOF BAR
+           ============================================ */
+        .social-proof-bar {
+            background: #FFFFFF;
+            padding: 50px var(--side-pad);
+            text-align: center;
+        }
+
+        .social-proof-bar p {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.7rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            color: var(--ink-light);
+            margin-bottom: 24px;
+        }
+
+        .proof-logos {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: clamp(30px, 5vw, 60px);
+            flex-wrap: wrap;
+            opacity: 0.5;
+        }
+
+        .proof-logos span {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            letter-spacing: -0.02em;
+            text-transform: uppercase;
+            color: var(--ink);
+        }
+
+        /* ============================================
+           HOW IT WORKS (3-STEP)
+           ============================================ */
+        .how-it-works {
+            background: #FFFFFF;
+            padding: var(--section-pad) var(--side-pad);
+            text-align: center;
+        }
+
+        .section-eyebrow {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--ruby);
+            margin-bottom: 16px;
+        }
+
+        .section-headline {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(2rem, 4.5vw, 4rem);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+
+        .section-subline {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            line-height: 1.7;
+            color: var(--ink-light);
+            max-width: 580px;
+            margin: 0 auto 60px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .step-card {
+            position: relative;
+            background: #FFFFFF;
+            border: 1px solid rgba(0,0,0,0.06);
+            border-radius: 24px;
+            padding: 48px 32px 40px;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .step-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            left: 32px;
+            background: var(--ink);
+            color: #FFFFFF;
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 1.1rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #FFFFFF;
+        }
+
+        .step-emoji {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .step-title {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1.3rem;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .step-desc {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: var(--ink-light);
+        }
+
+        /* ============================================
+           PRODUCT SHOWCASE (Flavor Grid)
+           ============================================ */
+        .products-section {
+            background: var(--surface-subtle);
+            padding: var(--section-pad) var(--side-pad);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .products-section::before {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: rgba(244,114,182,0.04);
+            pointer-events: none;
+        }
+
+        .products-section .section-eyebrow { color: var(--ruby); }
+        .products-section .section-headline { color: var(--ink); }
+        .products-section .section-subline { color: var(--ink-light); }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 24px;
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        .product-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: pointer;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px) rotate(-1deg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+        }
+
+        .product-card-image {
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 280px;
+            position: relative;
+        }
+
+        .product-card-image img {
+            max-height: 250px;
+            width: auto;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 20px rgba(0,0,0,0.12));
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .product-card:hover .product-card-image img {
+            transform: scale(1.08) rotate(2deg);
+        }
+
+        .product-card-info {
+            padding: 20px 24px 24px;
+            border-top: 1px solid rgba(0,0,0,0.06);
+        }
+
+        .product-flavor {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 1rem;
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+
+        .product-detail {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            color: var(--ink-light);
+            margin-bottom: 12px;
+        }
+
+        .product-price {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--ink);
+        }
+
+        .product-tag {
+            display: inline-block;
+            background: var(--ink);
+            color: #FFFFFF;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.55rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 4px 10px;
+            border-radius: 100px;
+            position: absolute;
+            top: 16px;
+            right: 16px;
+        }
+
+        /* ============================================
+           BLOOM EFFECT / EXPERIENCE SECTION
+           ============================================ */
+        .bloom-section {
+            background: #FFFFFF;
+            padding: var(--section-pad) var(--side-pad);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bloom-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: clamp(40px, 6vw, 80px);
+            align-items: center;
+        }
+
+        .bloom-visual {
+            position: relative;
+        }
+
+        .bloom-visual-inner {
+            background: var(--ink);
+            border-radius: 32px;
+            border: none;
+            border-left: 6px solid var(--margarita);
+            padding: 60px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bloom-visual-inner::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 70%, rgba(244,114,182,0.15) 0%, rgba(74,222,128,0.08) 30%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .bloom-step-list {
+            list-style: none;
+            text-align: left;
+            position: relative;
+            z-index: 2;
+        }
+
+        .bloom-step-list li {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(1.5rem, 3vw, 2.2rem);
+            color: #FFFFFF;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .bloom-step-list li:last-child {
+            border-bottom: none;
+            color: var(--margarita);
+        }
+
+        .bloom-step-list .step-icon {
+            font-size: 1.5em;
+            flex-shrink: 0;
+        }
+
+        .bloom-text .section-eyebrow {
+            text-align: left;
+        }
+
+        .bloom-text .section-headline {
+            text-align: left;
+        }
+
+        .bloom-text .section-subline {
+            text-align: left;
+            margin: 0 0 32px;
+        }
+
+        .feature-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .feature-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.5;
+            color: var(--ink-light);
+        }
+
+        .feature-list li .check {
+            flex-shrink: 0;
+            width: 24px;
+            height: 24px;
+            background: var(--margarita);
+            color: var(--ink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        /* ============================================
+           TESTIMONIALS
+           ============================================ */
+        .testimonials-section {
+            background: var(--ink);
+            padding: var(--section-pad) var(--side-pad);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .testimonials-section .section-eyebrow { color: var(--cosmo); }
+        .testimonials-section .section-headline { color: #FFFFFF; }
+
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            max-width: 1200px;
+            margin: 40px auto 0;
+        }
+
+        .testimonial-card {
+            padding: 36px 32px;
+            border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            transition: all 0.3s;
+        }
+
+        .testimonial-card:nth-child(1) { background: rgba(244,114,182,0.12); border-left: 3px solid var(--cosmo); }
+        .testimonial-card:nth-child(2) { background: rgba(74,222,128,0.1); border-left: 3px solid var(--margarita); }
+        .testimonial-card:nth-child(3) { background: rgba(251,191,36,0.1); border-left: 3px solid var(--old-fashioned); }
+        .testimonial-card:nth-child(4) { background: rgba(251,146,60,0.1); border-left: 3px solid var(--mule); }
+
+        .testimonial-card:hover {
+            transform: translateY(-4px) rotate(-0.5deg);
+        }
+
+        .testimonial-quote {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(1rem, 1.5vw, 1.2rem);
+            color: #FFFFFF;
+            line-height: 1.4;
+            margin-bottom: 20px;
+            letter-spacing: -0.01em;
+        }
+
+        .testimonial-author {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.5);
+            font-weight: 500;
+        }
+
+        .testimonial-stars {
+            color: var(--old-fashioned);
+            margin-bottom: 12px;
+            font-size: 1rem;
+            letter-spacing: 2px;
+        }
+
+        /* ============================================
+           FOUNDER STORY
+           ============================================ */
+        .founder-section {
+            background: #FFFFFF;
+            padding: var(--section-pad) var(--side-pad);
+        }
+
+        .founder-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .founder-content .section-headline {
+            margin-bottom: 40px;
+        }
+
+        .founder-story {
+            font-family: var(--font-body);
+            font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+            line-height: 1.8;
+            color: var(--ink-light);
+            text-align: left;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+
+        .founder-story p {
+            margin-bottom: 24px;
+        }
+
+        .founder-story .pullquote {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            line-height: 1.3;
+            color: var(--ink);
+            text-align: center;
+            padding: 32px 0;
+            margin: 32px 0;
+            border-top: 2px solid rgba(0,0,0,0.06);
+            border-bottom: 2px solid rgba(0,0,0,0.06);
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, var(--ruby), var(--cosmo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================================
+           CLEAN INGREDIENTS (Anti-Ingredient Logic)
+           ============================================ */
+        .ingredients-section {
+            background: var(--surface-subtle) url('images/ingredients-bg.jpg') center center / cover no-repeat;
+            padding: var(--section-pad) var(--side-pad);
+            color: var(--ink);
+            position: relative;
+        }
+
+        .ingredients-section > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .ingredients-section .section-eyebrow { color: var(--emerald); }
+        .ingredients-section .section-headline { color: var(--ink); }
+        .ingredients-section .section-subline { color: var(--ink-light); }
+
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+
+        .ingredient-item {
+            text-align: center;
+            padding: 32px 24px;
+            border-radius: 20px;
+            background: #FFFFFF;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        }
+
+        .ingredient-item:hover {
+            box-shadow: 0 12px 32px rgba(0,0,0,0.06);
+            transform: translateY(-4px);
+        }
+
+        .ingredient-icon {
+            font-size: 2.5rem;
+            margin-bottom: 16px;
+            display: block;
+        }
+
+        .ingredient-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .ingredient-detail {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--ink-light);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           VARIETY PACK CTA
+           ============================================ */
+        .cta-section {
+            background: #FFFFFF;
+            padding: var(--section-pad) var(--side-pad);
+        }
+
+        .cta-card {
+            max-width: 1100px;
+            margin: 0 auto;
+            background: var(--ink);
+            border: 3px solid var(--cosmo);
+            border-radius: 32px;
+            padding: clamp(40px, 6vw, 80px);
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-card::before {
+            content: '';
+            position: absolute;
+            bottom: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(244,114,182,0.12) 0%, rgba(74,222,128,0.06) 50%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .cta-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-text .section-eyebrow { color: var(--margarita); }
+
+        .cta-text .section-headline {
+            color: #FFFFFF;
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            margin-bottom: 16px;
+        }
+
+        .cta-text .section-subline {
+            color: rgba(255,255,255,0.7);
+            text-align: left;
+            margin: 0 0 32px;
+        }
+
+        .cta-price {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .cta-price-amount {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: 2.8rem;
+            color: #FFFFFF;
+            letter-spacing: -0.03em;
+        }
+
+        .cta-price-detail {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .cta-images {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: center;
+        }
+
+        .cta-product-stack {
+            position: relative;
+            width: 300px;
+            height: 360px;
+        }
+
+        .cta-product-stack img {
+            position: absolute;
+            max-height: 300px;
+            width: auto;
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.3));
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .cta-product-stack img:nth-child(1) {
+            top: 0;
+            left: 0;
+            transform: rotate(-8deg);
+            z-index: 3;
+        }
+
+        .cta-product-stack img:nth-child(2) {
+            top: 20px;
+            left: 80px;
+            transform: rotate(3deg);
+            z-index: 2;
+        }
+
+        .cta-product-stack img:nth-child(3) {
+            top: 40px;
+            left: 160px;
+            transform: rotate(10deg);
+            z-index: 1;
+        }
+
+        .cta-product-stack:hover img:nth-child(1) {
+            transform: rotate(-12deg) translateX(-20px);
+        }
+        .cta-product-stack:hover img:nth-child(2) {
+            transform: rotate(0deg) translateY(-10px);
+        }
+        .cta-product-stack:hover img:nth-child(3) {
+            transform: rotate(15deg) translateX(20px);
+        }
+
+        /* CTA button override for dark card */
+        .cta-card .btn-primary {
+            background: #FFFFFF;
+            color: var(--ink);
+        }
+        .cta-card .btn-primary:hover {
+            background: var(--margarita);
+            color: var(--ink);
+        }
+
+        /* ============================================
+           FAQ
+           ============================================ */
+        .faq-section {
+            background: #FFFFFF;
+            padding: 0 var(--side-pad) var(--section-pad);
+        }
+
+        .faq-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            border-bottom: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .faq-item:first-child {
+            border-top: 1px solid rgba(0,0,0,0.08);
+        }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 24px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: clamp(0.95rem, 1.5vw, 1.15rem);
+            text-align: left;
+            color: var(--ink);
+            letter-spacing: -0.01em;
+            transition: color 0.2s;
+        }
+
+        .faq-question:hover {
+            color: var(--cosmo);
+        }
+
+        .faq-question .faq-icon {
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: var(--off-white);
+            color: var(--ink);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.3s;
+        }
+
+        .faq-item.active .faq-icon {
+            background: var(--cosmo);
+            color: #FFFFFF;
+            transform: rotate(45deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .faq-answer-inner {
+            padding: 0 0 24px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--ink-light);
+            max-width: 640px;
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--ink);
+            color: #FFFFFF;
+            padding: 60px var(--side-pad) 40px;
+        }
+
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+        }
+
+        .footer-brand {
+            max-width: 300px;
+        }
+
+        .footer-brand .nav-logo {
+            font-size: 1.4rem;
+            margin-bottom: 16px;
+            color: #FFFFFF;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .footer-col h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--cosmo);
+            margin-bottom: 20px;
+        }
+
+        .footer-col ul {
+            list-style: none;
+        }
+
+        .footer-col ul li {
+            margin-bottom: 12px;
+        }
+
+        .footer-col ul li a {
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.5);
+            transition: color 0.2s;
+        }
+
+        .footer-col ul li a:hover {
+            color: #FFFFFF;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.35);
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 16px;
+        }
+
+        .footer-social a {
+            color: rgba(255,255,255,0.4);
+            font-size: 1.1rem;
+            transition: color 0.2s;
+        }
+
+        .footer-social a:hover {
+            color: var(--margarita);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        /* ============================================
+           COLOR POP ELEMENTS
+           ============================================ */
+
+        /* Scrolling color marquee strip */
+        .color-marquee {
+            background: var(--ink);
+            padding: 14px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .color-marquee-track {
+            display: flex;
+            animation: marquee-scroll 20s linear infinite;
+            width: max-content;
+        }
+
+        .color-marquee-track span {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: 0.75rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            white-space: nowrap;
+            padding: 0 24px;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-marquee-track .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        .dot-green { background: var(--margarita); }
+        .dot-pink { background: var(--cosmo); }
+        .dot-orange { background: var(--mule); }
+        .dot-yellow { background: var(--old-fashioned); }
+        .dot-brown { background: var(--espresso-accent); }
+
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* Bright social proof bar */
+        .social-proof-bar {
+            background: var(--cosmo) !important;
+            padding: 50px var(--side-pad);
+            text-align: center;
+        }
+
+        .social-proof-bar p {
+            color: #FFFFFF !important;
+            opacity: 0.85;
+        }
+
+        .proof-logos {
+            opacity: 1 !important;
+        }
+
+        .proof-logos span {
+            color: #FFFFFF !important;
+        }
+
+        /* Color accent strips — full-width solid bars between sections */
+        .color-strip {
+            height: 6px;
+            width: 100%;
+        }
+
+        .color-strip-gradient {
+            background: linear-gradient(90deg, var(--margarita), var(--cosmo), var(--mule), var(--old-fashioned), var(--margarita));
+            background-size: 200% 100%;
+            animation: gradient-shift 8s linear infinite;
+        }
+
+        .color-strip-green { background: var(--margarita); }
+        .color-strip-pink { background: var(--cosmo); }
+        .color-strip-orange { background: var(--mule); }
+        .color-strip-yellow { background: var(--old-fashioned); }
+
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        /* Step card colored top borders */
+        .step-card:nth-child(1) { border-top: 4px solid var(--margarita); }
+        .step-card:nth-child(2) { border-top: 4px solid var(--cosmo); }
+        .step-card:nth-child(3) { border-top: 4px solid var(--mule); }
+
+        /* Step numbers with flavor colors */
+        .step-card:nth-child(1) .step-number { background: var(--margarita); color: var(--ink); }
+        .step-card:nth-child(2) .step-number { background: var(--cosmo); color: #FFFFFF; }
+        .step-card:nth-child(3) .step-number { background: var(--mule); color: #FFFFFF; }
+
+        /* Bright tag badges per flavor */
+        .product-card:nth-child(1) .product-tag { background: var(--margarita); color: var(--ink); }
+        .product-card:nth-child(4) .product-tag { background: var(--old-fashioned); color: var(--ink); }
+        .product-card:nth-child(5) .product-tag { background: var(--espresso-accent); color: #FFFFFF; }
+
+        /* Colorful quote marks in testimonials */
+        .testimonial-card:nth-child(1) .testimonial-quote::before { content: '\201C'; color: var(--cosmo); font-size: 3rem; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
+        .testimonial-card:nth-child(2) .testimonial-quote::before { content: '\201C'; color: var(--margarita); font-size: 3rem; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
+        .testimonial-card:nth-child(3) .testimonial-quote::before { content: '\201C'; color: var(--old-fashioned); font-size: 3rem; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
+        .testimonial-card:nth-child(4) .testimonial-quote::before { content: '\201C'; color: var(--mule); font-size: 3rem; line-height: 0; vertical-align: -0.4em; margin-right: 4px; }
+
+        /* Bright accent banner before CTA */
+        .flavor-banner {
+            background: var(--margarita);
+            padding: 24px var(--side-pad);
+            text-align: center;
+        }
+
+        .flavor-banner p {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1rem, 2vw, 1.4rem);
+            color: var(--ink);
+            letter-spacing: -0.02em;
+        }
+
+        /* Hero badge now uses a bright flavor color */
+        .hero-badge {
+            background: var(--cosmo) !important;
+            color: #FFFFFF !important;
+        }
+
+        /* Ingredient cards get colored top accent */
+        .ingredient-item:nth-child(1) { border-top: 3px solid var(--old-fashioned); }
+        .ingredient-item:nth-child(2) { border-top: 3px solid var(--cosmo); }
+        .ingredient-item:nth-child(3) { border-top: 3px solid var(--margarita); }
+        .ingredient-item:nth-child(4) { border-top: 3px solid var(--mule); }
+
+        /* FAQ section colored accent on headline */
+        .faq-section .section-headline {
+            background: linear-gradient(90deg, var(--ink) 60%, var(--cosmo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============ QUIZ MODAL ============ */
+        .quiz-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .quiz-overlay.active {
+            display: flex;
+        }
+        .quiz-card {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 520px;
+            width: 100%;
+            padding: 48px 40px 40px;
+            position: relative;
+            animation: bloom-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.25);
+        }
+        .quiz-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: var(--off-white);
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--ink);
+            transition: background 0.2s;
+        }
+        .quiz-close:hover { background: #eee; }
+        .quiz-progress {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 32px;
+        }
+        .quiz-progress-seg {
+            flex: 1;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--off-white);
+            transition: background 0.3s;
+        }
+        .quiz-progress-seg.filled { background: var(--cosmo); }
+        .quiz-step {
+            display: none;
+        }
+        .quiz-step.active {
+            display: block;
+            animation: slide-up 0.4s ease forwards;
+        }
+        .quiz-step-label {
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--cosmo);
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        .quiz-question {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--ink);
+            margin-bottom: 24px;
+            line-height: 1.3;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .quiz-opt {
+            border: 2px solid var(--off-white);
+            background: #fff;
+            border-radius: 14px;
+            padding: 14px 20px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            color: var(--ink);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .quiz-opt:hover {
+            border-color: var(--cosmo);
+            background: #FDF2F8;
+        }
+        .quiz-opt.selected {
+            border-color: var(--cosmo);
+            background: #FDF2F8;
+            font-weight: 600;
+        }
+        .quiz-opt-emoji {
+            font-size: 1.4rem;
+            flex-shrink: 0;
+        }
+        .quiz-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 28px;
+        }
+        .quiz-back {
+            background: none;
+            border: none;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--ink-light);
+            cursor: pointer;
+            padding: 8px 0;
+        }
+        .quiz-back:hover { color: var(--ink); }
+        .quiz-next {
+            background: var(--cosmo);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            padding: 12px 32px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        .quiz-next.ready {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .quiz-next:hover { transform: scale(1.03); }
+
+        /* Step 4 — Results */
+        .quiz-result-flavor {
+            font-family: var(--font-display);
+            font-size: 2rem;
+            font-weight: 800;
+            margin: 8px 0 12px;
+            line-height: 1.2;
+        }
+        .quiz-result-flavor.flavor-margarita { color: var(--margarita); }
+        .quiz-result-flavor.flavor-old-fashioned { color: var(--old-fashioned); }
+        .quiz-result-flavor.flavor-cosmopolitan { color: var(--cosmo); }
+        .quiz-result-flavor.flavor-moscow-mule { color: var(--mule); }
+        .quiz-result-flavor.flavor-espresso-martini { color: var(--espresso-accent); }
+        .quiz-result-desc {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            color: var(--ink-light);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+        .quiz-email-gate {
+            background: var(--off-white);
+            border-radius: 16px;
+            padding: 24px;
+            text-align: center;
+        }
+        .quiz-email-gate p {
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            color: var(--ink);
+            margin-bottom: 14px;
+            font-weight: 600;
+        }
+        .quiz-email-row {
+            display: flex;
+            gap: 8px;
+        }
+        .quiz-email-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e5e5e5;
+            border-radius: 100px;
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .quiz-email-input:focus { border-color: var(--cosmo); }
+        .quiz-email-submit {
+            background: var(--ink);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            padding: 12px 24px;
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .quiz-email-submit:hover { background: #333; }
+        .quiz-discount {
+            display: none;
+            text-align: center;
+            animation: slide-up 0.4s ease forwards;
+        }
+        .quiz-discount.visible { display: block; }
+        .quiz-discount-label {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--ink-light);
+            margin-bottom: 8px;
+        }
+        .quiz-discount-code {
+            display: inline-block;
+            background: #FDF2F8;
+            border: 2px dashed var(--cosmo);
+            border-radius: 12px;
+            padding: 14px 32px;
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: var(--cosmo);
+            letter-spacing: 0.05em;
+            margin-bottom: 16px;
+        }
+        .quiz-discount-sub {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--ink-light);
+        }
+        .quiz-cta-btn {
+            display: inline-block;
+            background: var(--cosmo);
+            color: #fff;
+            border: none;
+            border-radius: 100px;
+            padding: 14px 32px;
+            font-family: var(--font-body);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+        .quiz-cta-btn:hover { transform: scale(1.03); }
+
+        @media (max-width: 600px) {
+            .quiz-card { padding: 36px 24px 28px; }
+            .quiz-question { font-size: 1.25rem; }
+            .quiz-result-flavor { font-size: 1.6rem; }
+            .quiz-email-row { flex-direction: column; }
+            .quiz-email-submit { width: 100%; }
+            .quiz-discount-code { font-size: 1.2rem; padding: 12px 24px; }
+        }
+
+        @media (max-width: 900px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero-text { order: 1; }
+            .hero-visual { order: 0; }
+
+            .hero-subline { margin-left: auto; margin-right: auto; }
+            .hero-actions { justify-content: center; }
+
+            .hero-product-img { max-width: 280px; }
+            .hero-badge { top: -20px; right: 10%; }
+
+            .steps-grid { grid-template-columns: 1fr; max-width: 400px; margin: 0 auto; }
+
+            .bloom-content { grid-template-columns: 1fr; }
+            .bloom-text .section-eyebrow,
+            .bloom-text .section-headline,
+            .bloom-text .section-subline { text-align: center; }
+            .bloom-text .section-subline { margin: 0 auto 32px; }
+
+            .cta-card { grid-template-columns: 1fr; text-align: center; }
+            .cta-text .section-subline { text-align: center; margin: 0 auto 32px; }
+            .cta-product-stack { margin: 0 auto; }
+            .cta-price { justify-content: center; }
+
+            .footer-top { grid-template-columns: 1fr 1fr; }
+
+            .nav-links { display: none; }
+            .nav-mobile-toggle { display: block; }
+        }
+
+        @media (max-width: 600px) {
+            .products-grid { grid-template-columns: 1fr 1fr; }
+            .testimonials-grid { grid-template-columns: 1fr; }
+            .ingredients-grid { grid-template-columns: 1fr 1fr; }
+            .footer-top { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+            .proof-logos { flex-direction: column; gap: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ ANNOUNCEMENT BAR ============ -->
+    <div class="announcement-bar">
+        Free shipping on orders over $50 &nbsp;·&nbsp; <span>Launch Special: 15% Off Variety Packs</span>
+    </div>
+
+    <!-- ============ NAVIGATION ============ -->
+    <nav class="nav">
+        <a href="#" class="nav-logo">
+            Drink Bombs<span class="logo-dot"></span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#flavors">Flavors</a></li>
+            <li><a href="#about">Our Story</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="#shop" class="nav-cta">Shop Now</a></li>
+        </ul>
+        <button class="nav-mobile-toggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+        <div class="hero-circle hero-circle-1"></div>
+        <div class="hero-circle hero-circle-2"></div>
+        <div class="hero-circle hero-circle-3"></div>
+        <!-- Fizz bubbles: 35 particles for dense effervescence -->
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+        <div class="fizz-particle"></div>
+
+        <div class="hero-content">
+            <div class="hero-text">
+                <p class="hero-tagline">Drop · Fizz · Drink</p>
+                <h1 class="hero-headline">Craft Cocktails<br>in <em>3 Seconds</em></h1>
+                <p class="hero-subline">Drop a Drink Bomb into sparkling water and watch the magic bloom. Color cascades. Flavors unfold. Your glass just became the best part of the party.</p>
+                <div class="hero-actions">
+                    <a href="#shop" class="btn-primary">Shop Variety Pack →</a>
+                    <button class="btn-secondary" onclick="quiz.open()">
+                        🎯 Find Your Flavor
+                    </button>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="hero-badge">New<br>Flavors</div>
+                <img src="images/old-fashioned.png" alt="Drink Bombs Old Fashioned" class="hero-product-img">
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR MARQUEE STRIP ============ -->
+    <div class="color-marquee">
+        <div class="color-marquee-track">
+            <span><i class="dot dot-green"></i> Margarita</span>
+            <span><i class="dot dot-pink"></i> Cosmopolitan</span>
+            <span><i class="dot dot-orange"></i> Moscow Mule</span>
+            <span><i class="dot dot-yellow"></i> Old Fashioned</span>
+            <span><i class="dot dot-brown"></i> Espresso Martini</span>
+            <span><i class="dot dot-green"></i> Drop</span>
+            <span><i class="dot dot-pink"></i> Fizz</span>
+            <span><i class="dot dot-orange"></i> Drink</span>
+            <span><i class="dot dot-yellow"></i> Repeat</span>
+            <span><i class="dot dot-green"></i> Margarita</span>
+            <span><i class="dot dot-pink"></i> Cosmopolitan</span>
+            <span><i class="dot dot-orange"></i> Moscow Mule</span>
+            <span><i class="dot dot-yellow"></i> Old Fashioned</span>
+            <span><i class="dot dot-brown"></i> Espresso Martini</span>
+            <span><i class="dot dot-green"></i> Drop</span>
+            <span><i class="dot dot-pink"></i> Fizz</span>
+            <span><i class="dot dot-orange"></i> Drink</span>
+            <span><i class="dot dot-yellow"></i> Repeat</span>
+        </div>
+    </div>
+
+    <!-- ============ SOCIAL PROOF BAR ============ -->
+    <section class="social-proof-bar reveal">
+        <p>The party trick everyone is talking about</p>
+        <div class="proof-logos">
+            <span>TikTok</span>
+            <span>BuzzFeed</span>
+            <span>Refinery29</span>
+            <span>Food & Wine</span>
+            <span>Bon Appétit</span>
+        </div>
+    </section>
+
+    <!-- ============ HOW IT WORKS ============ -->
+    <section class="how-it-works" id="how-it-works">
+        <p class="section-eyebrow reveal">The Bloom Effect</p>
+        <h2 class="section-headline reveal reveal-delay-1">Zero Bartending.<br>Maximum Theater.</h2>
+        <p class="section-subline reveal reveal-delay-2">Each Drink Bomb is a precision-engineered sphere of natural flavors, acid balance, and effervescence. One sphere. One glass. Three seconds. That's it.</p>
+
+        <div class="steps-grid">
+            <div class="step-card reveal reveal-delay-1">
+                <span class="step-number">1</span>
+                <span class="step-emoji">💧</span>
+                <h3 class="step-title">Drop</h3>
+                <p class="step-desc">Add your Drink Bomb to a glass of sparkling water. Optionally add your spirit of choice.</p>
+            </div>
+            <div class="step-card reveal reveal-delay-2">
+                <span class="step-number">2</span>
+                <span class="step-emoji">✨</span>
+                <h3 class="step-title">Fizz</h3>
+                <p class="step-desc">Watch it sink, bloom, and cascade. Color, aroma, and flavor unfold in real time. This is the moment everyone films.</p>
+            </div>
+            <div class="step-card reveal reveal-delay-3">
+                <span class="step-number">3</span>
+                <span class="step-emoji">🍹</span>
+                <h3 class="step-title">Drink</h3>
+                <p class="step-desc">You just made a craft cocktail. No shaker. No recipe. No bartending degree. Cheers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Gradient ============ -->
+    <div class="color-strip color-strip-gradient"></div>
+
+    <!-- ============ PRODUCT SHOWCASE ============ -->
+    <section class="products-section" id="flavors">
+        <p class="section-eyebrow reveal" style="text-align:center;">Choose Your Flavor</p>
+        <h2 class="section-headline reveal reveal-delay-1" style="text-align:center;">Every Cocktail.<br>One Sphere.</h2>
+        <p class="section-subline reveal reveal-delay-2" style="text-align:center;">Classic cocktail flavors, reimagined as dissolvable spheres. Alcohol optional — every flavor works as a mocktail too.</p>
+
+        <div class="products-grid">
+            <div class="product-card reveal reveal-delay-1">
+                <div class="product-card-image" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5);">
+                    <span class="product-tag">Best Seller</span>
+                    <img src="images/margarita.png" alt="Margarita Drink Bomb">
+                </div>
+                <div class="product-card-info">
+                    <h3 class="product-flavor">Margarita</h3>
+                    <p class="product-detail">Lime · Citrus · Salt Rim</p>
+                    <span class="product-price">$14.99</span>
+                </div>
+            </div>
+
+            <div class="product-card reveal reveal-delay-2">
+                <div class="product-card-image" style="background: linear-gradient(135deg, #FFF7ED, #FFEDD5);">
+                    <img src="images/moscow-mule.png" alt="Moscow Mule Drink Bomb">
+                </div>
+                <div class="product-card-info">
+                    <h3 class="product-flavor">Moscow Mule</h3>
+                    <p class="product-detail">Ginger · Lime · Copper Kick</p>
+                    <span class="product-price">$14.99</span>
+                </div>
+            </div>
+
+            <div class="product-card reveal reveal-delay-3">
+                <div class="product-card-image" style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3);">
+                    <img src="images/cosmopolitan.png" alt="Cosmopolitan Drink Bomb">
+                </div>
+                <div class="product-card-info">
+                    <h3 class="product-flavor">Cosmopolitan</h3>
+                    <p class="product-detail">Cranberry · Citrus · Pink</p>
+                    <span class="product-price">$14.99</span>
+                </div>
+            </div>
+
+            <div class="product-card reveal reveal-delay-4">
+                <div class="product-card-image" style="background: linear-gradient(135deg, #FEFCE8, #FEF3C7);">
+                    <span class="product-tag">New</span>
+                    <img src="images/old-fashioned.png" alt="Old Fashioned Drink Bomb">
+                </div>
+                <div class="product-card-info">
+                    <h3 class="product-flavor">Old Fashioned</h3>
+                    <p class="product-detail">Orange · Bitters · Bourbon</p>
+                    <span class="product-price">$14.99</span>
+                </div>
+            </div>
+
+            <div class="product-card reveal reveal-delay-1">
+                <div class="product-card-image" style="background: linear-gradient(135deg, #F5F0ED, #E8DDD6);">
+                    <span class="product-tag">Premium</span>
+                    <img src="images/espresso-martini.png" alt="Espresso Martini Drink Bomb">
+                </div>
+                <div class="product-card-info">
+                    <h3 class="product-flavor">Espresso Martini</h3>
+                    <p class="product-detail">Coffee · Vanilla · Rich</p>
+                    <span class="product-price">$16.99</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Orange ============ -->
+    <div class="color-strip color-strip-orange"></div>
+
+    <!-- ============ THE BLOOM EFFECT / EXPERIENCE ============ -->
+    <section class="bloom-section">
+        <div class="bloom-content">
+            <div class="bloom-visual reveal">
+                <div class="bloom-visual-inner">
+                    <ul class="bloom-step-list">
+                        <li><span class="step-icon">🫧</span> It sinks</li>
+                        <li><span class="step-icon">💫</span> It fizzes</li>
+                        <li><span class="step-icon">🎨</span> Color blooms</li>
+                        <li><span class="step-icon">🌸</span> Aroma releases</li>
+                        <li><span class="step-icon">🥂</span> You drink</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="bloom-text">
+                <p class="section-eyebrow reveal">Why Drink Bombs</p>
+                <h2 class="section-headline reveal reveal-delay-1">The Moment Everyone<br>Pulls Out Their Phone</h2>
+                <p class="section-subline reveal reveal-delay-2">Your party isn't memorable because of the playlist. It's memorable because of <em>the moment</em>. The drop. The fizz. The bloom. Drink Bombs turn every glass into the thing everyone films.</p>
+                <ul class="feature-list reveal reveal-delay-3">
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>3-second craft cocktails</strong> — no bar cart, no muddler, no YouTube tutorial</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Cocktail or mocktail</strong> — every flavor works with or without alcohol</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Replaces 10 bottles</strong> with one sphere. No sticky mixers. No clutter. No waste.</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Clean ingredients</strong> — natural flavors, monk fruit sweetener, zero artificial colors</span>
+                    </li>
+                    <li>
+                        <span class="check">✓</span>
+                        <span><strong>Makes 2 drinks per bomb</strong> — share the moment</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Pink ============ -->
+    <div class="color-strip color-strip-pink"></div>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <section class="testimonials-section">
+        <p class="section-eyebrow reveal" style="text-align:center;">What People Are Saying</p>
+        <h2 class="section-headline reveal reveal-delay-1" style="text-align:center;">"Where Did You<br>Get Those?!"</h2>
+
+        <div class="testimonials-grid">
+            <div class="testimonial-card reveal reveal-delay-1">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-quote">"I dropped one in at my bachelorette and literally everyone screamed. We ordered 3 more packs the next day."</p>
+                <p class="testimonial-author">— Sarah K., Austin TX</p>
+            </div>
+            <div class="testimonial-card reveal reveal-delay-2">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-quote">"My husband doesn't drink but still wants to feel like he's part of the party. The mocktail version is perfect."</p>
+                <p class="testimonial-author">— Jessica M., Brooklyn NY</p>
+            </div>
+            <div class="testimonial-card reveal reveal-delay-3">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-quote">"I threw a dinner party and served these instead of hiring a bartender. Best decision. Everyone was filming their glass."</p>
+                <p class="testimonial-author">— Marcus T., Nashville TN</p>
+            </div>
+            <div class="testimonial-card reveal reveal-delay-4">
+                <div class="testimonial-stars">★★★★★</div>
+                <p class="testimonial-quote">"Sent the Margarita pack as a birthday gift. She said it was the most creative gift she's ever received."</p>
+                <p class="testimonial-author">— Priya L., San Francisco CA</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Green ============ -->
+    <div class="color-strip color-strip-green"></div>
+
+    <!-- ============ FOUNDER STORY ============ -->
+    <section class="founder-section" id="about">
+        <div class="founder-content">
+            <p class="section-eyebrow reveal">Our Story</p>
+            <h2 class="section-headline reveal reveal-delay-1">Born From a<br>Boring Drink</h2>
+
+            <div class="founder-story reveal reveal-delay-2">
+                <p>It started at a party. The kind where someone spends $80 on cocktail ingredients, uses each bottle once, and still ends up making something that tastes like an apology.</p>
+
+                <p>We watched a friend spend 20 minutes muddling, shaking, and measuring — just to produce a single mediocre Mojito. Meanwhile, the sparkling water on the counter sat there, simple and perfect, doing absolutely nothing.</p>
+
+                <div class="pullquote">"What if you could drop something into that glass and it just... became a cocktail?"</div>
+
+                <p>That question became an obsession. We spent months engineering the perfect dissolvable sphere — getting the acid balance right, the effervescence dramatic, the flavor authentic. Not a powder. Not a liquid. A ritual object that transforms your glass into theater.</p>
+
+                <p>Today, every Drink Bomb is made with natural flavors, clean sweeteners, and zero artificial colors. Each one makes 2 drinks and works as a cocktail or mocktail. Because the best drink at the party shouldn't require a bartending degree.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Yellow ============ -->
+    <div class="color-strip color-strip-yellow"></div>
+
+    <!-- ============ CLEAN INGREDIENTS ============ -->
+    <section class="ingredients-section">
+        <p class="section-eyebrow reveal" style="text-align:center;">What's Inside</p>
+        <h2 class="section-headline reveal reveal-delay-1" style="text-align:center;">One Sphere.<br>Clean Everything.</h2>
+        <p class="section-subline reveal reveal-delay-2" style="text-align:center;">No artificial colors. No high-fructose corn syrup. No mysterious powders.<br>Just real ingredients, engineered to bloom.</p>
+
+        <div class="ingredients-grid">
+            <div class="ingredient-item reveal reveal-delay-1">
+                <span class="ingredient-icon">🍋</span>
+                <p class="ingredient-label">Natural Flavors</p>
+                <p class="ingredient-detail">Real citrus, botanicals, and fruit-derived flavor systems</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-2">
+                <span class="ingredient-icon">⚖️</span>
+                <p class="ingredient-label">Acid Balance</p>
+                <p class="ingredient-detail">Citric and malic acid for that perfect cocktail tang</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-3">
+                <span class="ingredient-icon">🫧</span>
+                <p class="ingredient-label">Effervescence</p>
+                <p class="ingredient-detail">Food-grade effervescence agents for the dramatic bloom</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-4">
+                <span class="ingredient-icon">🍃</span>
+                <p class="ingredient-label">Monk Fruit</p>
+                <p class="ingredient-detail">Clean sweetener with zero glycemic impact. Low sugar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FLAVOR BANNER ============ -->
+    <div class="flavor-banner">
+        <p>5 Flavors. 10 Bombs. 20 Drinks. One Box.</p>
+    </div>
+
+    <!-- ============ CTA / VARIETY PACK ============ -->
+    <section class="cta-section" id="shop">
+        <div class="cta-card">
+            <div class="cta-text">
+                <p class="section-eyebrow reveal">Limited Launch Offer</p>
+                <h2 class="section-headline reveal reveal-delay-1">The Variety Pack</h2>
+                <p class="section-subline reveal reveal-delay-2">All 5 flavors. 10 bombs. 20 drinks. One box. The perfect way to find your favorite — or host the best party of the year.</p>
+                <div class="cta-price reveal reveal-delay-3">
+                    <span class="cta-price-amount">$59</span>
+                    <span class="cta-price-detail"><s>$74.95</s> · Save 20%<br>Free shipping included</span>
+                </div>
+                <a href="#" class="btn-primary reveal reveal-delay-3" style="animation-delay: 0.3s;">Get The Variety Pack →</a>
+                <button class="btn-secondary reveal reveal-delay-3" style="animation-delay: 0.4s; margin-top: 12px;" onclick="quiz.open()">Not Sure? Take The Quiz →</button>
+            </div>
+            <div class="cta-images reveal reveal-delay-2">
+                <div class="cta-product-stack">
+                    <img src="images/margarita.png" alt="Margarita">
+                    <img src="images/cosmopolitan.png" alt="Cosmopolitan">
+                    <img src="images/espresso-martini.png" alt="Espresso Martini">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ FAQ ============ -->
+    <section class="faq-section" id="faq">
+        <div class="faq-container">
+            <p class="section-eyebrow reveal" style="text-align:center;">FAQ</p>
+            <h2 class="section-headline reveal reveal-delay-1" style="text-align:center; margin-bottom:48px;">Questions?<br>We've Got Answers.</h2>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    What exactly is a Drink Bomb?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Think bath bomb, but for your cocktail glass. It's a compressed sphere made from natural flavors, citric acid, and effervescence agents. You drop it into sparkling water (with or without alcohol), and it dissolves into a fully flavored craft cocktail in about 3 seconds. Each bomb makes 2 drinks.</div>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    Do I need to add alcohol?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Nope. Every Drink Bomb works perfectly as a mocktail with just sparkling water. Want a cocktail? Add your spirit of choice (vodka, tequila, gin, bourbon). The flavor is engineered to shine either way.</div>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    What sparkling water do you recommend?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Topo Chico is our top pick — the mineral content and carbonation level are perfect. But any sparkling water works great: LaCroix, Pellegrino, Perrier, store brand. Just make sure it's carbonated.</div>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    How many drinks does one bomb make?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Each Drink Bomb makes 2 full cocktails or mocktails. Drop it in, let it dissolve, then split between two glasses. Or keep it all for yourself — we won't tell.</div>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    What are the ingredients?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Natural flavor systems, citric and malic acid for balance, food-grade effervescence agents for the bloom, and monk fruit / allulose as a clean sweetener. No artificial colors, no HFCS, no mystery powders. We're obsessed with clean labels.</div>
+                </div>
+            </div>
+
+            <div class="faq-item reveal">
+                <button class="faq-question">
+                    How long do they last?
+                    <span class="faq-icon">+</span>
+                </button>
+                <div class="faq-answer">
+                    <div class="faq-answer-inner">Drink Bombs are shelf-stable for 12+ months when stored in a cool, dry place. No refrigeration needed. They're perfect for stocking up or gifting ahead of time.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP: Gradient → Footer ============ -->
+    <div class="color-strip color-strip-gradient"></div>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="nav-logo">Drink Bombs<span class="logo-dot" style="background:var(--cosmo);"></span></div>
+                <p>Craft cocktails in 3 seconds. Drop. Fizz. Drink. Made with clean ingredients, designed for the moment everyone pulls out their phone.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="#">Variety Pack</a></li>
+                    <li><a href="#">Margarita</a></li>
+                    <li><a href="#">Moscow Mule</a></li>
+                    <li><a href="#">Cosmopolitan</a></li>
+                    <li><a href="#">Old Fashioned</a></li>
+                    <li><a href="#">Espresso Martini</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Learn</h4>
+                <ul>
+                    <li><a href="#">How It Works</a></li>
+                    <li><a href="#">Our Story</a></li>
+                    <li><a href="#">Ingredients</a></li>
+                    <li><a href="#">Cocktail Recipes</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="#">FAQ</a></li>
+                    <li><a href="#">Shipping & Returns</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Wholesale</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Drink Bombs. All rights reserved.</p>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="TikTok">🎵</a>
+                <a href="#" aria-label="Twitter">🐦</a>
+                <a href="#" aria-label="Facebook">📘</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ JAVASCRIPT ============ -->
+    <script>
+        // Intersection Observer for reveal animations
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, {
+            threshold: 0.1,
+            rootMargin: '0px 0px -40px 0px'
+        });
+
+        document.querySelectorAll('.reveal').forEach(el => {
+            revealObserver.observe(el);
+        });
+
+        // FAQ Accordion
+        document.querySelectorAll('.faq-question').forEach(button => {
+            button.addEventListener('click', () => {
+                const item = button.closest('.faq-item');
+                const answer = item.querySelector('.faq-answer');
+                const isActive = item.classList.contains('active');
+
+                // Close all
+                document.querySelectorAll('.faq-item').forEach(i => {
+                    i.classList.remove('active');
+                    i.querySelector('.faq-answer').style.maxHeight = null;
+                });
+
+                // Open clicked if it wasn't active
+                if (!isActive) {
+                    item.classList.add('active');
+                    answer.style.maxHeight = answer.scrollHeight + 'px';
+                }
+            });
+        });
+
+        // Mobile nav toggle
+        const mobileToggle = document.querySelector('.nav-mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                const isOpen = navLinks.style.display === 'flex';
+                navLinks.style.display = isOpen ? 'none' : 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '70px';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.background = '#FFFFFF';
+                navLinks.style.padding = '20px var(--side-pad)';
+                navLinks.style.borderBottom = '1px solid rgba(0,0,0,0.06)';
+                navLinks.style.gap = '16px';
+            });
+        }
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Close mobile nav if open
+                    if (window.innerWidth <= 900) {
+                        navLinks.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // ============ QUIZ LOGIC ============
+        const quiz = {
+            step: 1,
+            answers: {},
+            flavors: {
+                margarita: {
+                    name: 'Margarita',
+                    cls: 'flavor-margarita',
+                    desc: 'You\'re giving sun-soaked rooftop energy. The Margarita Drink Bomb drops into sparkling water with a burst of citrus green — zesty lime, a hint of salt, and pure tropical freshness.'
+                },
+                'old-fashioned': {
+                    name: 'Old Fashioned',
+                    cls: 'flavor-old-fashioned',
+                    desc: 'You\'ve got main character energy with a refined edge. The Old Fashioned Drink Bomb blooms a warm amber — rich bourbon notes, orange zest, and a touch of bitters.'
+                },
+                cosmopolitan: {
+                    name: 'Cosmopolitan',
+                    cls: 'flavor-cosmopolitan',
+                    desc: 'You radiate glamour and good times. The Cosmopolitan Drink Bomb swirls a gorgeous pink — cranberry sweetness, a citrus kiss, and serious cocktail-hour energy.'
+                },
+                'moscow-mule': {
+                    name: 'Moscow Mule',
+                    cls: 'flavor-moscow-mule',
+                    desc: 'You bring the heat and the hype. The Moscow Mule Drink Bomb fizzes bright orange — spicy ginger, fresh lime, and an effervescent kick that wakes up any party.'
+                },
+                'espresso-martini': {
+                    name: 'Espresso Martini',
+                    cls: 'flavor-espresso-martini',
+                    desc: 'You\'re the one keeping the party alive past midnight. The Espresso Martini Drink Bomb drops a deep, velvety brown — bold coffee, smooth vanilla, and a caffeinated edge.'
+                }
+            },
+
+            open() {
+                this.step = 1;
+                this.answers = {};
+                document.getElementById('quizOverlay').classList.add('active');
+                document.body.style.overflow = 'hidden';
+                this.render();
+            },
+
+            close() {
+                document.getElementById('quizOverlay').classList.remove('active');
+                document.body.style.overflow = '';
+            },
+
+            select(btn) {
+                const opts = btn.closest('.quiz-options');
+                opts.querySelectorAll('.quiz-opt').forEach(o => o.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.answers[this.step] = btn.dataset.value;
+                btn.closest('.quiz-step').querySelector('.quiz-next').classList.add('ready');
+            },
+
+            next() {
+                if (!this.answers[this.step]) return;
+                if (this.step < 3) {
+                    this.step++;
+                    this.render();
+                } else if (this.step === 3) {
+                    this.step = 4;
+                    this.showResult();
+                    this.render();
+                }
+            },
+
+            back() {
+                if (this.step > 1) {
+                    this.step--;
+                    this.render();
+                }
+            },
+
+            render() {
+                const steps = document.querySelectorAll('.quiz-step');
+                steps.forEach(s => s.classList.remove('active'));
+                const active = document.querySelector(`.quiz-step[data-step="${this.step}"]`);
+                if (active) active.classList.add('active');
+
+                const segs = document.querySelectorAll('.quiz-progress-seg');
+                segs.forEach((s, i) => s.classList.toggle('filled', i < this.step));
+            },
+
+            getResult() {
+                const vibe = this.answers[1];
+                const occasion = this.answers[2];
+                const scoreMap = { margarita: 0, 'old-fashioned': 0, cosmopolitan: 0, 'moscow-mule': 0, 'espresso-martini': 0 };
+
+                // Step 1 — primary signal (weight: 3)
+                if (vibe === 'fresh')  scoreMap['margarita'] += 3;
+                if (vibe === 'bold')   scoreMap['old-fashioned'] += 3;
+                if (vibe === 'sweet')  scoreMap['cosmopolitan'] += 3;
+                if (vibe === 'spicy')  scoreMap['moscow-mule'] += 3;
+                if (vibe === 'coffee') scoreMap['espresso-martini'] += 3;
+
+                // Step 2 — tiebreaker (weight: 1)
+                if (occasion === 'brunch')       scoreMap['margarita'] += 1;
+                if (occasion === 'dinner-party') scoreMap['old-fashioned'] += 1;
+                if (occasion === 'girls-night')  scoreMap['cosmopolitan'] += 1;
+                if (occasion === 'house-party')  scoreMap['moscow-mule'] += 1;
+                if (occasion === 'date-night')   scoreMap['espresso-martini'] += 1;
+
+                let best = 'margarita';
+                let bestScore = 0;
+                for (const [flavor, score] of Object.entries(scoreMap)) {
+                    if (score > bestScore) { bestScore = score; best = flavor; }
+                }
+                return best;
+            },
+
+            showResult() {
+                const key = this.getResult();
+                const f = this.flavors[key];
+                document.getElementById('quizResultName').textContent = f.name;
+                document.getElementById('quizResultName').className = 'quiz-result-flavor ' + f.cls;
+                document.getElementById('quizResultDesc').textContent = f.desc;
+                document.getElementById('quizEmailGate').style.display = '';
+                document.getElementById('quizDiscount').classList.remove('visible');
+            },
+
+            submitEmail(e) {
+                e.preventDefault();
+                const email = document.getElementById('quizEmailInput').value;
+                if (!email) return;
+                // Store lead locally
+                const leads = JSON.parse(localStorage.getItem('drinkbombs_leads') || '[]');
+                leads.push({ email, flavor: this.getResult(), date: new Date().toISOString() });
+                localStorage.setItem('drinkbombs_leads', JSON.stringify(leads));
+                // Show discount
+                document.getElementById('quizEmailGate').style.display = 'none';
+                document.getElementById('quizDiscount').classList.add('visible');
+            }
+        };
+
+        // Close on overlay click
+        document.getElementById('quizOverlay').addEventListener('click', function(e) {
+            if (e.target === this) quiz.close();
+        });
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') quiz.close();
+        });
+    </script>
+
+    <!-- ============ QUIZ MODAL ============ -->
+    <div class="quiz-overlay" id="quizOverlay">
+        <div class="quiz-card">
+            <button class="quiz-close" onclick="quiz.close()" aria-label="Close quiz">&times;</button>
+            <div class="quiz-progress">
+                <div class="quiz-progress-seg filled"></div>
+                <div class="quiz-progress-seg"></div>
+                <div class="quiz-progress-seg"></div>
+                <div class="quiz-progress-seg"></div>
+            </div>
+
+            <!-- Step 1 -->
+            <div class="quiz-step active" data-step="1">
+                <p class="quiz-step-label">Step 1 of 3</p>
+                <h3 class="quiz-question">What's Your Party Vibe?</h3>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-value="fresh" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🌿</span> Fresh & Tropical
+                    </button>
+                    <button class="quiz-opt" data-value="bold" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🥃</span> Bold & Sophisticated
+                    </button>
+                    <button class="quiz-opt" data-value="sweet" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🍓</span> Sweet & Fruity
+                    </button>
+                    <button class="quiz-opt" data-value="spicy" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🔥</span> Spicy & Adventurous
+                    </button>
+                    <button class="quiz-opt" data-value="coffee" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">☕</span> Coffee & Elegant
+                    </button>
+                </div>
+                <div class="quiz-nav">
+                    <span></span>
+                    <button class="quiz-next" onclick="quiz.next()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="quiz-step" data-step="2">
+                <p class="quiz-step-label">Step 2 of 3</p>
+                <h3 class="quiz-question">What's the Occasion?</h3>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-value="house-party" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🎉</span> House Party
+                    </button>
+                    <button class="quiz-opt" data-value="dinner-party" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🕯️</span> Dinner Party
+                    </button>
+                    <button class="quiz-opt" data-value="brunch" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🥂</span> Brunch / Day Drinking
+                    </button>
+                    <button class="quiz-opt" data-value="girls-night" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">💅</span> Girls Night
+                    </button>
+                    <button class="quiz-opt" data-value="date-night" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">✨</span> Date Night / Cozy Night In
+                    </button>
+                </div>
+                <div class="quiz-nav">
+                    <button class="quiz-back" onclick="quiz.back()">← Back</button>
+                    <button class="quiz-next" onclick="quiz.next()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="quiz-step" data-step="3">
+                <p class="quiz-step-label">Step 3 of 3</p>
+                <h3 class="quiz-question">Cocktail or Mocktail?</h3>
+                <div class="quiz-options">
+                    <button class="quiz-opt" data-value="cocktail" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🍸</span> Classic Cocktail — always
+                    </button>
+                    <button class="quiz-opt" data-value="mocktail" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🫧</span> Mocktail — keep it sober
+                    </button>
+                    <button class="quiz-opt" data-value="both" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🤷</span> Both — depends on the mood
+                    </button>
+                    <button class="quiz-opt" data-value="surprise" onclick="quiz.select(this)">
+                        <span class="quiz-opt-emoji">🎲</span> Surprise me
+                    </button>
+                </div>
+                <div class="quiz-nav">
+                    <button class="quiz-back" onclick="quiz.back()">← Back</button>
+                    <button class="quiz-next" onclick="quiz.next()">See My Result →</button>
+                </div>
+            </div>
+
+            <!-- Step 4 — Result -->
+            <div class="quiz-step" data-step="4">
+                <p class="quiz-step-label">Your Perfect Flavor</p>
+                <h3 class="quiz-result-flavor" id="quizResultName">Margarita</h3>
+                <p class="quiz-result-desc" id="quizResultDesc">Loading your result...</p>
+
+                <div class="quiz-email-gate" id="quizEmailGate">
+                    <p>Enter your email to unlock 15% off your first order</p>
+                    <form class="quiz-email-row" onsubmit="quiz.submitEmail(event)">
+                        <input type="email" class="quiz-email-input" placeholder="you@email.com" required id="quizEmailInput">
+                        <button type="submit" class="quiz-email-submit">Unlock Code</button>
+                    </form>
+                </div>
+
+                <div class="quiz-discount" id="quizDiscount">
+                    <p class="quiz-discount-label">Your 15% off discount code</p>
+                    <div class="quiz-discount-code">VIBES15</div>
+                    <p class="quiz-discount-sub">Use at checkout — valid for 7 days</p>
+                    <a href="#shop" class="quiz-cta-btn" onclick="quiz.close()">Shop Now →</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
