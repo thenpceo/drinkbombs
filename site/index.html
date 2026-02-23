@@ -196,7 +196,7 @@
             background: rgba(255,255,255,0.92);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid rgba(0,0,0,0.06);
+            border-bottom: none;
             padding: 0 var(--side-pad);
             display: flex;
             align-items: center;
@@ -205,20 +205,21 @@
         }
 
         .nav-logo {
-            font-family: var(--font-display);
-            font-weight: 900;
-            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
-            letter-spacing: -0.02em;
-            text-transform: uppercase;
+            display: flex;
+            align-items: center;
         }
 
-        .nav-logo .logo-dot {
+        .nav-logo img {
+            height: 36px;
+            width: auto;
+        }
+
+        .nav-logo .logo-bomb {
             display: inline-block;
-            width: 8px;
-            height: 8px;
-            background: var(--cosmo);
-            border-radius: 50%;
-            margin-left: 2px;
+            vertical-align: middle;
+            margin-left: 5px;
+            position: relative;
+            top: -2px;
             vertical-align: super;
             font-size: 0.6em;
         }
@@ -288,34 +289,56 @@
         .hero {
             position: relative;
             min-height: 90vh;
-            background: #FFFFFF;
+            background: #FBF8F4;
             overflow: hidden;
             display: flex;
-            align-items: flex-end;
+            align-items: center;
             justify-content: flex-start;
-            padding: 0 var(--side-pad) clamp(40px, 6vw, 80px);
+            padding: clamp(80px, 10vw, 120px) var(--side-pad) clamp(40px, 6vw, 80px);
         }
 
         .hero-video {
             position: absolute;
             top: 0;
-            left: 0;
-            width: 100%;
+            right: 0;
+            left: auto;
+            width: 55%;
             height: 100%;
             object-fit: cover;
+            object-position: center center;
             z-index: 0;
         }
 
-        /* Light overlay — subtle so video stays bright */
+        /* Soft fade at the very top — blends nav into hero seamlessly */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 140px;
+            background: linear-gradient(to bottom,
+                rgba(255,255,255,1) 0%,
+                rgba(251,248,244,0.6) 50%,
+                transparent 100%
+            );
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        /* Fade from warm cream on the left into the video on the right */
         .hero::after {
             content: '';
             position: absolute;
             inset: 0;
             background: linear-gradient(
-                to top,
-                rgba(255,255,255,0.55) 0%,
-                rgba(255,255,255,0.15) 35%,
-                rgba(255,255,255,0.0) 60%
+                to right,
+                rgba(251,248,244,1) 0%,
+                rgba(251,248,244,1) 25%,
+                rgba(251,248,244,0.92) 40%,
+                rgba(251,248,244,0.6) 55%,
+                rgba(251,248,244,0.15) 70%,
+                rgba(251,248,244,0.0) 82%
             );
             z-index: 1;
             pointer-events: none;
@@ -337,15 +360,36 @@
         }
 
         .hero-tagline {
-            font-family: var(--font-display);
-            font-weight: 800;
-            font-size: clamp(0.75rem, 1.2vw, 0.9rem);
-            letter-spacing: 0.2em;
-            text-transform: uppercase;
-            color: var(--ruby);
-            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 24px;
             animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
+
+        .hero-tagline .slogan-word {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(1rem, 1.8vw, 1.4rem);
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-tagline .slogan-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .hero-tagline .slogan-drop  { color: var(--margarita); }
+        .hero-tagline .slogan-fizz  { color: var(--cosmo); }
+        .hero-tagline .slogan-drink { color: var(--mule); }
+        .hero-tagline .dot-1 { background: var(--margarita); }
+        .hero-tagline .dot-2 { background: var(--cosmo); }
+
+        /* Hide floating slogan bar */
+        .hero-slogan-bar { display: none; }
 
         .hero-headline {
             font-family: var(--font-display);
@@ -542,6 +586,8 @@
             animation: fizz-up 3s ease-out infinite;
             pointer-events: none;
             z-index: 0;
+            will-change: transform, opacity;
+            transform: translateZ(0);
         }
         .fizz-particle:nth-child(odd) { background: rgba(74,222,128,0.25); }
         .fizz-particle:nth-child(3n) { background: rgba(251,191,36,0.3); }
@@ -666,13 +712,37 @@
             border: 1px solid rgba(0,0,0,0.06);
             border-radius: 24px;
             padding: 48px 32px 40px;
-            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .step-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 24px;
+            transform: scaleY(0);
+            transform-origin: bottom center;
+            transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 0;
+        }
+
+        .step-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .step-card:nth-child(1)::before { background: linear-gradient(to top, rgba(74,222,128,0.22), rgba(74,222,128,0.06)); }
+        .step-card:nth-child(2)::before { background: linear-gradient(to top, rgba(244,114,182,0.22), rgba(244,114,182,0.06)); }
+        .step-card:nth-child(3)::before { background: linear-gradient(to top, rgba(251,146,60,0.22), rgba(251,146,60,0.06)); }
+
+        .step-card > * {
+            position: relative;
+            z-index: 1;
         }
 
         .step-card:hover {
             transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            box-shadow: 0 20px 48px rgba(0,0,0,0.10);
         }
 
         .step-number {
@@ -1014,6 +1084,22 @@
         .founder-section {
             background: #FFFFFF;
             padding: var(--section-pad) var(--side-pad);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .founder-section::after {
+            content: '';
+            position: absolute;
+            right: -120px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-8deg);
+            width: 800px;
+            height: 800px;
+            background: url('images/martini-line-art.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.05;
+            pointer-events: none;
         }
 
         .founder-content {
@@ -1318,7 +1404,7 @@
         }
 
         .faq-item.active .faq-icon {
-            background: var(--cosmo);
+            background: var(--ink);
             color: #FFFFFF;
             transform: rotate(45deg);
         }
@@ -1461,19 +1547,11 @@
             gap: 12px;
         }
 
-        .color-marquee-track .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
+        .color-marquee-track .bomb-icon {
             display: inline-block;
+            vertical-align: middle;
             flex-shrink: 0;
         }
-
-        .dot-green { background: var(--margarita); }
-        .dot-pink { background: var(--cosmo); }
-        .dot-orange { background: var(--mule); }
-        .dot-yellow { background: var(--old-fashioned); }
-        .dot-brown { background: var(--espresso-accent); }
 
         @keyframes marquee-scroll {
             0% { transform: translateX(0); }
@@ -1482,14 +1560,14 @@
 
         /* Bright social proof bar */
         .social-proof-bar {
-            background: var(--cosmo) !important;
+            background: var(--ink) !important;
             padding: 50px var(--side-pad);
             text-align: center;
         }
 
         .social-proof-bar p {
             color: #FFFFFF !important;
-            opacity: 0.85;
+            opacity: 0.5;
         }
 
         .proof-logos {
@@ -1765,6 +1843,7 @@
             display: flex;
             gap: 8px;
         }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
         .quiz-email-input {
             flex: 1;
             padding: 12px 16px;
@@ -1822,7 +1901,7 @@
         }
         .quiz-cta-btn {
             display: inline-block;
-            background: var(--cosmo);
+            background: var(--ink);
             color: #fff;
             border: none;
             border-radius: 100px;
@@ -1891,24 +1970,176 @@
             .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
             .proof-logos { flex-direction: column; gap: 16px; }
         }
+
+        /* ============================================
+           LIFESTYLE FEATURE SECTION
+           ============================================ */
+        .lifestyle-feature {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            min-height: 85vh;
+        }
+
+        .lifestyle-image-panel {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .lifestyle-image-panel img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            display: block;
+            transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .lifestyle-feature:hover .lifestyle-image-panel img {
+            transform: scale(1.03);
+        }
+
+        .lifestyle-copy-panel {
+            background: #FAFAFA;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: clamp(48px, 8vw, 100px) clamp(36px, 6vw, 80px);
+            position: relative;
+        }
+
+        .lifestyle-copy-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse at bottom right, rgba(74,222,128,0.08) 0%, transparent 65%);
+            pointer-events: none;
+        }
+
+        .lifestyle-eyebrow {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--margarita);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .lifestyle-headline {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(3.5rem, 7vw, 6.5rem);
+            line-height: 0.95;
+            letter-spacing: -0.04em;
+            color: var(--ink);
+            margin-bottom: 28px;
+            position: relative;
+        }
+
+        .lifestyle-sub {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            line-height: 1.75;
+            color: var(--ink-light);
+            max-width: 420px;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .lifestyle-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--ink);
+            color: #FFFFFF;
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            align-self: flex-start;
+            position: relative;
+        }
+
+        .lifestyle-cta:hover {
+            background: var(--margarita);
+            color: var(--ink);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 32px rgba(74,222,128,0.25);
+        }
+
+        @media (max-width: 900px) {
+            .lifestyle-feature {
+                grid-template-columns: 1fr;
+                min-height: auto;
+            }
+            .lifestyle-image-panel {
+                height: 60vw;
+                min-height: 320px;
+            }
+            .lifestyle-copy-panel {
+                padding: 48px 24px;
+            }
+            .lifestyle-headline { font-size: clamp(3rem, 10vw, 4.5rem); }
+        }
+
+        /* ── Mobile hero: text on top, video below ── */
+        @media (max-width: 640px) {
+            .hero {
+                flex-direction: column;
+                align-items: flex-start;
+                min-height: auto;
+                padding: 96px 20px 0;
+                overflow: visible;
+            }
+
+            .hero-content {
+                order: 1;
+                max-width: 100%;
+                padding-bottom: 32px;
+            }
+
+            .hero-video {
+                order: 2;
+                position: relative;
+                width: calc(100% + 40px);
+                margin-left: -20px;
+                height: 72vw;
+                top: auto;
+                right: auto;
+                left: auto;
+                border-radius: 0;
+                object-position: center top;
+                -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 28%);
+                mask-image: linear-gradient(to bottom, transparent 0%, black 28%);
+            }
+
+            .hero::after {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
 
     <!-- ============ ANNOUNCEMENT BAR ============ -->
     <div class="announcement-bar">
-        Free shipping on orders over $50 &nbsp;·&nbsp; <span>Launch Special: 15% Off Variety Packs</span>
+        Free shipping on orders over $50 &nbsp;·&nbsp; <span>Launch Special: 15% Off Variety Packs</span> &nbsp;·&nbsp; Woman-Owned &amp; Independently Made
     </div>
 
     <!-- ============ NAVIGATION ============ -->
     <nav class="nav">
         <a href="#" class="nav-logo">
-            Drink Bombs<span class="logo-dot"></span>
+            <img src="images/logo.png" alt="Drink Bombs">
         </a>
         <ul class="nav-links">
             <li><a href="#how-it-works">How It Works</a></li>
             <li><a href="#flavors">Flavors</a></li>
-            <li><a href="#about">Our Story</a></li>
+            <li><a href="our-story.html">Our Story</a></li>
             <li><a href="#faq">FAQ</a></li>
             <li><a href="#shop" class="nav-cta">Shop Now</a></li>
         </ul>
@@ -1919,13 +2150,28 @@
 
     <!-- ============ HERO ============ -->
     <section class="hero">
-        <video class="hero-video" autoplay muted loop playsinline>
+        <video class="hero-video" autoplay muted loop playsinline poster="images/margarita.png">
             <source src="images/hero-video.mp4" type="video/mp4">
         </video>
 
+        <!-- Full-width slogan bar -->
+        <div class="hero-slogan-bar">
+            <span class="slogan-word slogan-drop">Drop</span>
+            <span class="slogan-dot dot-1"></span>
+            <span class="slogan-word slogan-fizz">Fizz</span>
+            <span class="slogan-dot dot-2"></span>
+            <span class="slogan-word slogan-drink">Drink</span>
+        </div>
+
         <div class="hero-content">
             <div class="hero-text">
-                <p class="hero-tagline">Drop · Fizz · Drink</p>
+                <p class="hero-tagline">
+                    <span class="slogan-word slogan-drop">Drop</span>
+                    <span class="slogan-dot dot-1"></span>
+                    <span class="slogan-word slogan-fizz">Fizz</span>
+                    <span class="slogan-dot dot-2"></span>
+                    <span class="slogan-word slogan-drink">Drink</span>
+                </p>
                 <h1 class="hero-headline">Craft Cocktails<br>in <em>3 Seconds</em></h1>
                 <p class="hero-subline">Drop a Drink Bomb into sparkling water and watch the magic bloom. Color cascades. Flavors unfold. Your glass just became the best part of the party.</p>
                 <div class="hero-actions">
@@ -1941,24 +2187,24 @@
     <!-- ============ COLOR MARQUEE STRIP ============ -->
     <div class="color-marquee">
         <div class="color-marquee-track">
-            <span><i class="dot dot-green"></i> Margarita</span>
-            <span><i class="dot dot-pink"></i> Cosmopolitan</span>
-            <span><i class="dot dot-orange"></i> Moscow Mule</span>
-            <span><i class="dot dot-yellow"></i> Old Fashioned</span>
-            <span><i class="dot dot-brown"></i> Espresso Martini</span>
-            <span><i class="dot dot-green"></i> Drop</span>
-            <span><i class="dot dot-pink"></i> Fizz</span>
-            <span><i class="dot dot-orange"></i> Drink</span>
-            <span><i class="dot dot-yellow"></i> Repeat</span>
-            <span><i class="dot dot-green"></i> Margarita</span>
-            <span><i class="dot dot-pink"></i> Cosmopolitan</span>
-            <span><i class="dot dot-orange"></i> Moscow Mule</span>
-            <span><i class="dot dot-yellow"></i> Old Fashioned</span>
-            <span><i class="dot dot-brown"></i> Espresso Martini</span>
-            <span><i class="dot dot-green"></i> Drop</span>
-            <span><i class="dot dot-pink"></i> Fizz</span>
-            <span><i class="dot dot-orange"></i> Drink</span>
-            <span><i class="dot dot-yellow"></i> Repeat</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#4ADE80"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Margarita</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#F472B6"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Cosmopolitan</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FB923C"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FFD700"/></svg> Moscow Mule</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FBBF24"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Old Fashioned</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#A17256"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Espresso Martini</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#4ADE80"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Drop</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#F472B6"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Fizz</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FB923C"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FFD700"/></svg> Drink</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FBBF24"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Repeat</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#4ADE80"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Margarita</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#F472B6"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Cosmopolitan</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FB923C"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FFD700"/></svg> Moscow Mule</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FBBF24"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Old Fashioned</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#A17256"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Espresso Martini</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#4ADE80"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Drop</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#F472B6"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Fizz</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FB923C"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FFD700"/></svg> Drink</span>
+            <span><svg class="bomb-icon" aria-hidden="true" width="13" height="15" viewBox="0 0 14 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="7" cy="11" r="5" fill="#FBBF24"/><rect x="6" y="5" width="2" height="1.2" rx="0.6" fill="#555"/><path d="M7.5 5.2 C9 3.5 10 2 9.5 1.2" stroke="#888" stroke-width="1.3" stroke-linecap="round"/><circle cx="9.5" cy="1.2" r="1" fill="#FB923C"/></svg> Repeat</span>
         </div>
     </div>
 
@@ -1974,43 +2220,22 @@
         </div>
     </section>
 
+    <!-- ============ LIFESTYLE FEATURE ============ -->
+    <section class="lifestyle-feature">
+        <div class="lifestyle-image-panel">
+            <img src="images/margarita-lifestyle.jpg" alt="Margarita Drink Bomb dropping into a cocktail glass">
+        </div>
+        <div class="lifestyle-copy-panel">
+            <p class="lifestyle-eyebrow">The Margarita</p>
+            <h2 class="lifestyle-headline">Watch It<br>Drop.</h2>
+            <p class="lifestyle-sub">One sphere. Three seconds. A salt-rimmed margarita that looks like it came from a rooftop bar. Alcohol optional — the drama is included.</p>
+            <a href="#flavors" class="lifestyle-cta">Shop Margarita →</a>
+        </div>
+    </section>
+
     <!-- ============ HOW IT WORKS ============ -->
     <section class="how-it-works fizz-section" id="how-it-works">
-        <!-- Fizz bubbles: 45 particles for dense effervescence -->
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
-        <div class="fizz-particle"></div>
+        <!-- Fizz bubbles: reduced to 10 for performance -->
         <div class="fizz-particle"></div>
         <div class="fizz-particle"></div>
         <div class="fizz-particle"></div>
@@ -2059,63 +2284,63 @@
         <p class="section-subline reveal reveal-delay-2" style="text-align:center;">Classic cocktail flavors, reimagined as dissolvable spheres. Alcohol optional — every flavor works as a mocktail too.</p>
 
         <div class="products-grid">
-            <div class="product-card reveal reveal-delay-1">
+            <a href="product.html?flavor=margarita" class="product-card reveal reveal-delay-1" style="text-decoration:none;color:inherit;">
                 <div class="product-card-image" style="background: linear-gradient(135deg, #ECFDF5, #D1FAE5);">
                     <span class="product-tag">Best Seller</span>
-                    <img src="images/margarita.png" alt="Margarita Drink Bomb">
+                    <img src="images/margarita.png" alt="Margarita Drink Bomb" loading="lazy">
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-flavor">Margarita</h3>
                     <p class="product-detail">Lime · Citrus · Salt Rim</p>
-                    <span class="product-price">$14.99</span>
+                    <span class="product-price">2-Pack · $9.99&nbsp;&nbsp;|&nbsp;&nbsp;4-Pack · $17.99</span>
                 </div>
-            </div>
+            </a>
 
-            <div class="product-card reveal reveal-delay-2">
+            <a href="product.html?flavor=moscow-mule" class="product-card reveal reveal-delay-2" style="text-decoration:none;color:inherit;">
                 <div class="product-card-image" style="background: linear-gradient(135deg, #FFF7ED, #FFEDD5);">
-                    <img src="images/moscow-mule.png" alt="Moscow Mule Drink Bomb">
+                    <img src="images/moscow-mule.png" alt="Moscow Mule Drink Bomb" loading="lazy">
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-flavor">Moscow Mule</h3>
                     <p class="product-detail">Ginger · Lime · Copper Kick</p>
-                    <span class="product-price">$14.99</span>
+                    <span class="product-price">2-Pack · $9.99&nbsp;&nbsp;|&nbsp;&nbsp;4-Pack · $17.99</span>
                 </div>
-            </div>
+            </a>
 
-            <div class="product-card reveal reveal-delay-3">
+            <a href="product.html?flavor=cosmopolitan" class="product-card reveal reveal-delay-3" style="text-decoration:none;color:inherit;">
                 <div class="product-card-image" style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3);">
-                    <img src="images/cosmopolitan.png" alt="Cosmopolitan Drink Bomb">
+                    <img src="images/cosmopolitan.png" alt="Cosmopolitan Drink Bomb" loading="lazy">
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-flavor">Cosmopolitan</h3>
                     <p class="product-detail">Cranberry · Citrus · Pink</p>
-                    <span class="product-price">$14.99</span>
+                    <span class="product-price">2-Pack · $9.99&nbsp;&nbsp;|&nbsp;&nbsp;4-Pack · $17.99</span>
                 </div>
-            </div>
+            </a>
 
-            <div class="product-card reveal reveal-delay-4">
+            <a href="product.html?flavor=old-fashioned" class="product-card reveal reveal-delay-4" style="text-decoration:none;color:inherit;">
                 <div class="product-card-image" style="background: linear-gradient(135deg, #FEFCE8, #FEF3C7);">
                     <span class="product-tag">New</span>
-                    <img src="images/old-fashioned.png" alt="Old Fashioned Drink Bomb">
+                    <img src="images/old-fashioned.png" alt="Old Fashioned Drink Bomb" loading="lazy">
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-flavor">Old Fashioned</h3>
                     <p class="product-detail">Orange · Bitters · Bourbon</p>
-                    <span class="product-price">$14.99</span>
+                    <span class="product-price">2-Pack · $9.99&nbsp;&nbsp;|&nbsp;&nbsp;4-Pack · $17.99</span>
                 </div>
-            </div>
+            </a>
 
-            <div class="product-card reveal reveal-delay-1">
+            <a href="product.html?flavor=espresso-martini" class="product-card reveal reveal-delay-1" style="text-decoration:none;color:inherit;">
                 <div class="product-card-image" style="background: linear-gradient(135deg, #F5F0ED, #E8DDD6);">
                     <span class="product-tag">Premium</span>
-                    <img src="images/espresso-martini.png" alt="Espresso Martini Drink Bomb">
+                    <img src="images/espresso-martini.png" alt="Espresso Martini Drink Bomb" loading="lazy">
                 </div>
                 <div class="product-card-info">
                     <h3 class="product-flavor">Espresso Martini</h3>
                     <p class="product-detail">Coffee · Vanilla · Rich</p>
-                    <span class="product-price">$16.99</span>
+                    <span class="product-price">2-Pack · $9.99&nbsp;&nbsp;|&nbsp;&nbsp;4-Pack · $17.99</span>
                 </div>
-            </div>
+            </a>
         </div>
     </section>
 
@@ -2159,7 +2384,7 @@
                     </li>
                     <li>
                         <span class="check">✓</span>
-                        <span><strong>Makes 2 drinks per bomb</strong> — share the moment</span>
+                        <span><strong>1 bomb, 1 cocktail</strong> — perfectly portioned, no splitting required</span>
                     </li>
                 </ul>
             </div>
@@ -2198,65 +2423,9 @@
         </div>
     </section>
 
-    <!-- ============ COLOR STRIP: Green ============ -->
-    <div class="color-strip color-strip-green"></div>
-
-    <!-- ============ FOUNDER STORY ============ -->
-    <section class="founder-section" id="about">
-        <div class="founder-content">
-            <p class="section-eyebrow reveal">Our Story</p>
-            <h2 class="section-headline reveal reveal-delay-1">Born From a<br>Boring Drink</h2>
-
-            <div class="founder-story reveal reveal-delay-2">
-                <p>It started at a party. The kind where someone spends $80 on cocktail ingredients, uses each bottle once, and still ends up making something that tastes like an apology.</p>
-
-                <p>We watched a friend spend 20 minutes muddling, shaking, and measuring — just to produce a single mediocre Mojito. Meanwhile, the sparkling water on the counter sat there, simple and perfect, doing absolutely nothing.</p>
-
-                <div class="pullquote">"What if you could drop something into that glass and it just... became a cocktail?"</div>
-
-                <p>That question became an obsession. We spent months engineering the perfect dissolvable sphere — getting the acid balance right, the effervescence dramatic, the flavor authentic. Not a powder. Not a liquid. A ritual object that transforms your glass into theater.</p>
-
-                <p>Today, every Drink Bomb is made with natural flavors, clean sweeteners, and zero artificial colors. Each one makes 2 drinks and works as a cocktail or mocktail. Because the best drink at the party shouldn't require a bartending degree.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============ COLOR STRIP: Yellow ============ -->
-    <div class="color-strip color-strip-yellow"></div>
-
-    <!-- ============ CLEAN INGREDIENTS ============ -->
-    <section class="ingredients-section">
-        <p class="section-eyebrow reveal" style="text-align:center;">What's Inside</p>
-        <h2 class="section-headline reveal reveal-delay-1" style="text-align:center;">One Sphere.<br>Clean Everything.</h2>
-        <p class="section-subline reveal reveal-delay-2" style="text-align:center;">No artificial colors. No high-fructose corn syrup. No mysterious powders.<br>Just real ingredients, engineered to bloom.</p>
-
-        <div class="ingredients-grid">
-            <div class="ingredient-item reveal reveal-delay-1">
-                <span class="ingredient-icon">🍋</span>
-                <p class="ingredient-label">Natural Flavors</p>
-                <p class="ingredient-detail">Real citrus, botanicals, and fruit-derived flavor systems</p>
-            </div>
-            <div class="ingredient-item reveal reveal-delay-2">
-                <span class="ingredient-icon">⚖️</span>
-                <p class="ingredient-label">Acid Balance</p>
-                <p class="ingredient-detail">Citric and malic acid for that perfect cocktail tang</p>
-            </div>
-            <div class="ingredient-item reveal reveal-delay-3">
-                <span class="ingredient-icon">🫧</span>
-                <p class="ingredient-label">Effervescence</p>
-                <p class="ingredient-detail">Food-grade effervescence agents for the dramatic bloom</p>
-            </div>
-            <div class="ingredient-item reveal reveal-delay-4">
-                <span class="ingredient-icon">🍃</span>
-                <p class="ingredient-label">Monk Fruit</p>
-                <p class="ingredient-detail">Clean sweetener with zero glycemic impact. Low sugar.</p>
-            </div>
-        </div>
-    </section>
-
     <!-- ============ FLAVOR BANNER ============ -->
     <div class="flavor-banner">
-        <p>5 Flavors. 10 Bombs. 20 Drinks. One Box.</p>
+        <p>5 Flavors. 10 Bombs. 10 Drinks. One Box.</p>
     </div>
 
     <!-- ============ CTA / VARIETY PACK ============ -->
@@ -2265,7 +2434,7 @@
             <div class="cta-text">
                 <p class="section-eyebrow reveal">Limited Launch Offer</p>
                 <h2 class="section-headline reveal reveal-delay-1">The Variety Pack</h2>
-                <p class="section-subline reveal reveal-delay-2">All 5 flavors. 10 bombs. 20 drinks. One box. The perfect way to find your favorite — or host the best party of the year.</p>
+                <p class="section-subline reveal reveal-delay-2">All 5 flavors. 10 bombs. 10 drinks. One box. The perfect way to find your favorite — or host the best party of the year.</p>
                 <div class="cta-price reveal reveal-delay-3">
                     <span class="cta-price-amount">$59</span>
                     <span class="cta-price-detail"><s>$74.95</s> · Save 20%<br>Free shipping included</span>
@@ -2295,7 +2464,7 @@
                     <span class="faq-icon">+</span>
                 </button>
                 <div class="faq-answer">
-                    <div class="faq-answer-inner">Think bath bomb, but for your cocktail glass. It's a compressed sphere made from natural flavors, citric acid, and effervescence agents. You drop it into sparkling water (with or without alcohol), and it dissolves into a fully flavored craft cocktail in about 3 seconds. Each bomb makes 2 drinks.</div>
+                    <div class="faq-answer-inner">Think bath bomb, but for your cocktail glass. It's a compressed sphere made from natural flavors, citric acid, and effervescence agents. You drop it into sparkling water (with or without alcohol), and it dissolves into a fully flavored craft cocktail in about 3 seconds. Each bomb makes 1 drink.</div>
                 </div>
             </div>
 
@@ -2325,7 +2494,7 @@
                     <span class="faq-icon">+</span>
                 </button>
                 <div class="faq-answer">
-                    <div class="faq-answer-inner">Each Drink Bomb makes 2 full cocktails or mocktails. Drop it in, let it dissolve, then split between two glasses. Or keep it all for yourself — we won't tell.</div>
+                    <div class="faq-answer-inner">Each Drink Bomb makes 1 full cocktail or mocktail. Drop it in, let it dissolve, and enjoy. Simple as that.</div>
                 </div>
             </div>
 
@@ -2358,7 +2527,7 @@
     <footer class="footer">
         <div class="footer-top">
             <div class="footer-brand">
-                <div class="nav-logo">Drink Bombs<span class="logo-dot" style="background:var(--cosmo);"></span></div>
+                <div class="nav-logo"><img src="images/logo.png" alt="Drink Bombs"></div>
                 <p>Craft cocktails in 3 seconds. Drop. Fizz. Drink. Made with clean ingredients, designed for the moment everyone pulls out their phone.</p>
             </div>
             <div class="footer-col">
@@ -2393,7 +2562,7 @@
             </div>
         </div>
         <div class="footer-bottom">
-            <p>&copy; 2026 Drink Bombs. All rights reserved.</p>
+            <p>&copy; 2026 Drink Bombs. All rights reserved. &nbsp;·&nbsp; <span style="color: var(--cosmo); font-weight: 700;">Woman-Owned &amp; Independently Made</span></p>
             <div class="footer-social">
                 <a href="#" aria-label="Instagram">📷</a>
                 <a href="#" aria-label="TikTok">🎵</a>
@@ -2610,10 +2779,6 @@
             }
         };
 
-        // Close on overlay click
-        document.getElementById('quizOverlay').addEventListener('click', function(e) {
-            if (e.target === this) quiz.close();
-        });
         // Close on Escape key
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') quiz.close();
@@ -2621,7 +2786,7 @@
     </script>
 
     <!-- ============ QUIZ MODAL ============ -->
-    <div class="quiz-overlay" id="quizOverlay">
+    <div class="quiz-overlay" id="quizOverlay" role="dialog" aria-modal="true" aria-label="Party Drink Vibe Quiz">
         <div class="quiz-card">
             <button class="quiz-close" onclick="quiz.close()" aria-label="Close quiz">&times;</button>
             <div class="quiz-progress">
@@ -2718,6 +2883,7 @@
                 <div class="quiz-email-gate" id="quizEmailGate">
                     <p>Enter your email to unlock 15% off your first order</p>
                     <form class="quiz-email-row" onsubmit="quiz.submitEmail(event)">
+                        <label for="quizEmailInput" class="sr-only">Email address</label>
                         <input type="email" class="quiz-email-input" placeholder="you@email.com" required id="quizEmailInput">
                         <button type="submit" class="quiz-email-submit">Unlock Code</button>
                     </form>
@@ -2732,5 +2898,59 @@
             </div>
         </div>
     </div>
+    <script>
+        // quizOverlay exists in DOM now — safe to bind
+        document.getElementById('quizOverlay').addEventListener('click', function(e) {
+            if (e.target === this) quiz.close();
+        });
+    </script>
+    <script>
+        (function () {
+            const colors = [
+                'rgba(244,113,181,0.55)',  // cosmo pink
+                'rgba(74,222,128,0.55)',   // margarita green
+                'rgba(251,146,60,0.55)',   // mule orange
+            ];
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes db-bubble {
+                    0%   { transform: translateY(0) scale(1);   opacity: 0.7; }
+                    100% { transform: translateY(-36px) scale(1.2); opacity: 0; }
+                }
+                .db-bubble {
+                    position: fixed;
+                    border-radius: 50%;
+                    pointer-events: none;
+                    z-index: 99999;
+                    animation: db-bubble 1.1s ease-out forwards;
+                }
+            `;
+            document.head.appendChild(style);
+
+            let last = 0;
+            document.addEventListener('mousemove', function (e) {
+                const now = Date.now();
+                if (now - last < 83) return; // throttle ~12/sec
+                last = now;
+
+                const size = Math.random() * 8 + 4;
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const b = document.createElement('div');
+                b.className = 'db-bubble';
+                b.style.cssText = `
+                    left: ${e.clientX - size / 2}px;
+                    top: ${e.clientY - size / 2}px;
+                    width: ${size}px;
+                    height: ${size}px;
+                    background: transparent;
+                    border: 2px solid ${color};
+                    box-shadow: inset 0 0 ${size * 0.4}px ${color};
+                `;
+                document.body.appendChild(b);
+                setTimeout(() => b.remove(), 900);
+            });
+        })();
+    </script>
 </body>
 </html>

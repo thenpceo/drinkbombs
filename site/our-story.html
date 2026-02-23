@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story — Drink Bombs</title>
+    <meta name="description" content="Born from a Pop Rock moment during Hurricane Harvey. Learn the story behind Drink Bombs, our clean ingredients, and the woman who built it all.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@400;500;600;700;800;900&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            --ruby: #E8364F;
+            --ruby-deep: #C02942;
+            --amber: #E8943A;
+            --amber-gold: #F0A742;
+            --amber-light: #FFF4E0;
+            --emerald: #34C470;
+            --emerald-deep: #22A85A;
+            --espresso: #5C3D2E;
+            --espresso-light: #8B6550;
+            --margarita: #4ADE80;
+            --cosmo: #F472B6;
+            --mule: #FB923C;
+            --old-fashioned: #FBBF24;
+            --espresso-accent: #A17256;
+            --cream: #FFFFFF;
+            --cream-warm: #FAFAFA;
+            --off-white: #F5F5F5;
+            --surface-subtle: #F8F8F8;
+            --ink: #1C1C1E;
+            --ink-light: #6B7280;
+            --font-display: 'Unbounded', sans-serif;
+            --font-body: 'DM Sans', sans-serif;
+            --section-pad: clamp(60px, 10vw, 120px);
+            --side-pad: clamp(20px, 5vw, 80px);
+        }
+
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+        body { font-family: var(--font-body); color: var(--ink); background: #FFFFFF; overflow-x: hidden; line-height: 1.6; }
+        img { max-width: 100%; height: auto; display: block; }
+        a { text-decoration: none; color: inherit; }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes slide-up {
+            0% { transform: translateY(60px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes marquee-scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+        @keyframes gradient-shift {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        /* ============================================
+           ANNOUNCEMENT BAR
+           ============================================ */
+        .announcement-bar {
+            background: var(--ink);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 10px var(--side-pad);
+            font-family: var(--font-body);
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+        .announcement-bar span { color: var(--margarita); }
+
+        /* ============================================
+           NAVIGATION
+           ============================================ */
+        .nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 0 var(--side-pad);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 70px;
+        }
+        .nav-logo { display: flex; align-items: center; }
+        .nav-logo img { height: 36px; width: auto; }
+        .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+        .nav-links a {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.03em;
+            text-transform: uppercase;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover { color: var(--cosmo); }
+        .nav-links a.active { color: var(--cosmo); }
+        .nav-cta {
+            background: var(--ink);
+            color: #FFFFFF !important;
+            padding: 10px 24px;
+            border-radius: 100px;
+            font-weight: 700 !important;
+            transition: all 0.3s !important;
+        }
+        .nav-cta:hover { background: var(--ruby) !important; color: #FFFFFF !important; transform: scale(1.05); }
+        .nav-mobile-toggle {
+            display: none;
+            background: none;
+            border: none;
+            cursor: pointer;
+            width: 30px;
+            height: 20px;
+            position: relative;
+        }
+        .nav-mobile-toggle span {
+            display: block;
+            width: 100%;
+            height: 2px;
+            background: var(--ink);
+            position: absolute;
+            left: 0;
+            transition: all 0.3s;
+        }
+        .nav-mobile-toggle span:nth-child(1) { top: 0; }
+        .nav-mobile-toggle span:nth-child(2) { top: 9px; }
+        .nav-mobile-toggle span:nth-child(3) { top: 18px; }
+
+        /* ============================================
+           PAGE HERO
+           ============================================ */
+        .page-hero {
+            background: #FBF8F4;
+            padding: clamp(60px, 10vw, 100px) var(--side-pad) clamp(40px, 6vw, 70px);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-hero::after {
+            content: '';
+            position: absolute;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-8deg);
+            width: 600px;
+            height: 600px;
+            background: url('images/martini-line-art.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.04;
+            pointer-events: none;
+        }
+        .page-hero-eyebrow {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--cosmo);
+            margin-bottom: 16px;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .page-hero-headline {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+            color: var(--ink);
+            max-width: 800px;
+            margin: 0 auto 20px;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.1s both;
+        }
+        .page-hero-sub {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.4vw, 1.2rem);
+            line-height: 1.7;
+            color: var(--ink-light);
+            max-width: 540px;
+            margin: 0 auto;
+            animation: slide-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s both;
+        }
+
+        /* ============================================
+           COLOR STRIPS
+           ============================================ */
+        .color-strip { height: 6px; width: 100%; }
+        .color-strip-gradient {
+            background: linear-gradient(90deg, var(--margarita), var(--cosmo), var(--mule), var(--old-fashioned), var(--margarita));
+            background-size: 200% 100%;
+            animation: gradient-shift 8s linear infinite;
+        }
+        .color-strip-green { background: var(--margarita); }
+        .color-strip-pink { background: var(--cosmo); }
+        .color-strip-yellow { background: var(--old-fashioned); }
+
+        /* ============================================
+           SECTION SHARED
+           ============================================ */
+        .section-eyebrow {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            color: var(--ruby);
+            margin-bottom: 16px;
+        }
+        .section-headline {
+            font-family: var(--font-display);
+            font-weight: 900;
+            font-size: clamp(2rem, 4.5vw, 4rem);
+            line-height: 1.1;
+            letter-spacing: -0.03em;
+            margin-bottom: 20px;
+        }
+        .section-subline {
+            font-family: var(--font-body);
+            font-size: clamp(1rem, 1.3vw, 1.15rem);
+            line-height: 1.7;
+            color: var(--ink-light);
+            max-width: 580px;
+            margin: 0 auto 60px;
+        }
+
+        /* ============================================
+           FOUNDER STORY
+           ============================================ */
+        .founder-section {
+            background: #FFFFFF;
+            padding: var(--section-pad) var(--side-pad);
+            position: relative;
+            overflow: hidden;
+        }
+        .founder-section::after {
+            content: '';
+            position: absolute;
+            right: -120px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-8deg);
+            width: 800px;
+            height: 800px;
+            background: url('images/martini-line-art.png') no-repeat center center;
+            background-size: contain;
+            opacity: 0.05;
+            pointer-events: none;
+        }
+        .founder-content {
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .founder-content .section-headline { margin-bottom: 40px; }
+        .founder-story {
+            font-family: var(--font-body);
+            font-size: clamp(1.05rem, 1.4vw, 1.2rem);
+            line-height: 1.8;
+            color: var(--ink-light);
+            text-align: left;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .founder-story p { margin-bottom: 24px; }
+        .founder-story .pullquote {
+            font-family: var(--font-display);
+            font-weight: 800;
+            font-size: clamp(1.4rem, 2.5vw, 2rem);
+            line-height: 1.3;
+            color: var(--ink);
+            text-align: center;
+            padding: 32px 0;
+            margin: 32px 0;
+            border-top: 2px solid rgba(0,0,0,0.06);
+            border-bottom: 2px solid rgba(0,0,0,0.06);
+            letter-spacing: -0.02em;
+            background: linear-gradient(90deg, var(--ruby), var(--cosmo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ============================================
+           CLEAN INGREDIENTS
+           ============================================ */
+        .ingredients-section {
+            background: var(--surface-subtle) url('images/ingredients-bg.jpg') center center / cover no-repeat;
+            padding: var(--section-pad) var(--side-pad);
+            color: var(--ink);
+            position: relative;
+        }
+        .ingredients-section > * { position: relative; z-index: 1; }
+        .ingredients-section .section-eyebrow { color: var(--emerald); }
+        .ingredients-section .section-headline { color: var(--ink); }
+        .ingredients-section .section-subline { color: var(--ink-light); }
+        .ingredients-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 32px;
+            max-width: 1000px;
+            margin: 50px auto 0;
+        }
+        .ingredient-item {
+            text-align: center;
+            padding: 32px 24px;
+            border-radius: 20px;
+            background: #FFFFFF;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.3s;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        }
+        .ingredient-item:hover { box-shadow: 0 12px 32px rgba(0,0,0,0.06); transform: translateY(-4px); }
+        .ingredient-item:nth-child(1) { border-top: 3px solid var(--old-fashioned); }
+        .ingredient-item:nth-child(2) { border-top: 3px solid var(--cosmo); }
+        .ingredient-item:nth-child(3) { border-top: 3px solid var(--margarita); }
+        .ingredient-item:nth-child(4) { border-top: 3px solid var(--mule); }
+        .ingredient-icon { font-size: 2.5rem; margin-bottom: 16px; display: block; }
+        .ingredient-label {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.85rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .ingredient-detail {
+            font-family: var(--font-body);
+            font-size: 0.85rem;
+            color: var(--ink-light);
+            line-height: 1.5;
+        }
+
+        /* ============================================
+           CTA STRIP
+           ============================================ */
+        .story-cta {
+            background: var(--ink);
+            padding: clamp(60px, 8vw, 100px) var(--side-pad);
+            text-align: center;
+        }
+        .story-cta .section-eyebrow { color: var(--margarita); }
+        .story-cta .section-headline { color: #FFFFFF; max-width: 700px; margin: 0 auto 20px; }
+        .story-cta .section-subline { color: rgba(255,255,255,0.6); }
+        .story-cta-actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 40px; }
+        .btn-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #FFFFFF;
+            color: var(--ink);
+            padding: 16px 36px;
+            border-radius: 100px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.95rem;
+            letter-spacing: -0.01em;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            text-transform: uppercase;
+        }
+        .btn-primary:hover { transform: translateY(-2px) scale(1.03); background: var(--margarita); }
+        .btn-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: rgba(255,255,255,0.7);
+            font-family: var(--font-body);
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 16px 24px;
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 100px;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: transparent;
+        }
+        .btn-secondary:hover { border-color: rgba(255,255,255,0.6); color: #FFFFFF; }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--ink);
+            color: #FFFFFF;
+            padding: 60px var(--side-pad) 40px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+        }
+        .footer-top {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 40px;
+            max-width: 1200px;
+            margin: 0 auto 60px;
+        }
+        .footer-brand { max-width: 300px; }
+        .footer-brand .nav-logo { font-size: 1.4rem; margin-bottom: 16px; color: #FFFFFF; }
+        .footer-brand p { font-size: 0.9rem; line-height: 1.6; color: rgba(255,255,255,0.5); }
+        .footer-col h4 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            font-size: 0.7rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            color: var(--cosmo);
+            margin-bottom: 20px;
+        }
+        .footer-col ul { list-style: none; }
+        .footer-col ul li { margin-bottom: 12px; }
+        .footer-col ul li a { font-size: 0.9rem; color: rgba(255,255,255,0.5); transition: color 0.2s; }
+        .footer-col ul li a:hover { color: #FFFFFF; }
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.08);
+            padding-top: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            max-width: 1200px;
+            margin: 0 auto;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.35);
+        }
+        .footer-social { display: flex; gap: 16px; }
+        .footer-social a { color: rgba(255,255,255,0.4); font-size: 1.1rem; transition: color 0.2s; }
+        .footer-social a:hover { color: var(--margarita); }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 900px) {
+            .footer-top { grid-template-columns: 1fr 1fr; }
+            .nav-links { display: none; }
+            .nav-mobile-toggle { display: block; }
+        }
+        @media (max-width: 600px) {
+            .ingredients-grid { grid-template-columns: 1fr 1fr; }
+            .footer-top { grid-template-columns: 1fr; }
+            .footer-bottom { flex-direction: column; gap: 16px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ============ ANNOUNCEMENT BAR ============ -->
+    <div class="announcement-bar">
+        Free shipping on orders over $50 &nbsp;·&nbsp; <span>Launch Special: 15% Off Variety Packs</span> &nbsp;·&nbsp; Woman-Owned &amp; Independently Made
+    </div>
+
+    <!-- ============ NAVIGATION ============ -->
+    <nav class="nav">
+        <a href="index.html" class="nav-logo">
+            <img src="images/logo.png" alt="Drink Bombs">
+        </a>
+        <ul class="nav-links">
+            <li><a href="index.html#how-it-works">How It Works</a></li>
+            <li><a href="index.html#flavors">Flavors</a></li>
+            <li><a href="our-story.html" class="active">Our Story</a></li>
+            <li><a href="index.html#faq">FAQ</a></li>
+            <li><a href="index.html#shop" class="nav-cta">Shop Now</a></li>
+        </ul>
+        <button class="nav-mobile-toggle" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <!-- ============ PAGE HERO ============ -->
+    <section class="page-hero">
+        <p class="page-hero-eyebrow">Our Story</p>
+        <h1 class="page-hero-headline">Born From a<br>Pop Rock Moment</h1>
+        <p class="page-hero-sub">A mother, a hurricane, and a really good idea. Here's how Drink Bombs went from a kitchen experiment to 50+ flavors and counting.</p>
+    </section>
+
+    <!-- ============ COLOR STRIP ============ -->
+    <div class="color-strip color-strip-gradient"></div>
+
+    <!-- ============ FOUNDER STORY ============ -->
+    <section class="founder-section" id="about">
+        <div class="founder-content">
+            <p class="section-eyebrow reveal">The Founder</p>
+            <h2 class="section-headline reveal reveal-delay-1">Chloe Di Leo</h2>
+
+            <div class="founder-story reveal reveal-delay-2">
+                <p>Chloe Di Leo didn't set out to reinvent the cocktail. She was trying to keep her kids hydrated.</p>
+
+                <p>It was Hurricane Harvey. Her daughter had run out of bath bombs. Her son came downstairs eating Pop Rocks. In that moment, the idea hit.</p>
+
+                <div class="pullquote">"I'm going to make you a fizzy drink bomb."<br><span style="font-size:0.75rem;font-weight:600;letter-spacing:0.05em;opacity:0.6;">— Chloe Di Leo, Founder</span></div>
+
+                <p>She called a chemist. Together they dehydrated the full flavor profile of a cocktail — citrus, bitters, natural sweeteners, edible flowers — into a single dissolving sphere. Zero artificial anything.</p>
+
+                <p>What started as a hydration treat for kids became something much bigger. Today, Drink Bombs comes in 50+ flavors and counting.</p>
+
+                <div style="margin-top: 32px; padding: 20px 24px; border-left: 4px solid var(--cosmo); background: rgba(244,113,181,0.06); border-radius: 0 12px 12px 0;">
+                    <p style="font-family: var(--font-display); font-weight: 900; font-size: 1.1rem; letter-spacing: -0.01em; margin: 0 0 4px;">Woman-Owned. Houston-Made.</p>
+                    <p style="font-size: 0.9rem; color: var(--ink-light); margin: 0;">Built on a mother's instinct — and a really good idea during a hurricane.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP ============ -->
+    <div class="color-strip color-strip-yellow"></div>
+
+    <!-- ============ CLEAN INGREDIENTS ============ -->
+    <section class="ingredients-section">
+        <p class="section-eyebrow reveal" style="text-align:center;">What's Inside</p>
+        <h2 class="section-headline reveal reveal-delay-1" style="text-align:center;">One Sphere.<br>Clean Everything.</h2>
+        <p class="section-subline reveal reveal-delay-2" style="text-align:center;">No artificial colors. No high-fructose corn syrup. No mysterious powders.<br>Just real ingredients, engineered to bloom.</p>
+
+        <div class="ingredients-grid">
+            <div class="ingredient-item reveal reveal-delay-1">
+                <span class="ingredient-icon">🍋</span>
+                <p class="ingredient-label">Natural Flavors</p>
+                <p class="ingredient-detail">Real citrus, botanicals, and fruit-derived flavor systems</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-2">
+                <span class="ingredient-icon">⚖️</span>
+                <p class="ingredient-label">Acid Balance</p>
+                <p class="ingredient-detail">Citric and malic acid for that perfect cocktail tang</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-3">
+                <span class="ingredient-icon">🫧</span>
+                <p class="ingredient-label">Effervescence</p>
+                <p class="ingredient-detail">Food-grade effervescence agents for the dramatic bloom</p>
+            </div>
+            <div class="ingredient-item reveal reveal-delay-4">
+                <span class="ingredient-icon">🍃</span>
+                <p class="ingredient-label">Monk Fruit</p>
+                <p class="ingredient-detail">Clean sweetener with zero glycemic impact. Low sugar.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ COLOR STRIP ============ -->
+    <div class="color-strip color-strip-pink"></div>
+
+    <!-- ============ CTA ============ -->
+    <section class="story-cta">
+        <p class="section-eyebrow reveal">Ready to Try?</p>
+        <h2 class="section-headline reveal reveal-delay-1">Drop. Fizz. Drink.</h2>
+        <p class="section-subline reveal reveal-delay-2">Get all 5 flavors in one box and find your favorite.</p>
+        <div class="story-cta-actions reveal reveal-delay-3">
+            <a href="index.html#shop" class="btn-primary">Shop the Variety Pack →</a>
+            <a href="index.html#flavors" class="btn-secondary">Explore Flavors</a>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="footer">
+        <div class="footer-top">
+            <div class="footer-brand">
+                <div class="nav-logo"><img src="images/logo.png" alt="Drink Bombs"></div>
+                <p>Craft cocktails in 3 seconds. Drop. Fizz. Drink. Made with clean ingredients, designed for the moment everyone pulls out their phone.</p>
+            </div>
+            <div class="footer-col">
+                <h4>Shop</h4>
+                <ul>
+                    <li><a href="index.html#shop">Variety Pack</a></li>
+                    <li><a href="index.html#flavors">Margarita</a></li>
+                    <li><a href="index.html#flavors">Moscow Mule</a></li>
+                    <li><a href="index.html#flavors">Cosmopolitan</a></li>
+                    <li><a href="index.html#flavors">Old Fashioned</a></li>
+                    <li><a href="index.html#flavors">Espresso Martini</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Learn</h4>
+                <ul>
+                    <li><a href="index.html#how-it-works">How It Works</a></li>
+                    <li><a href="our-story.html">Our Story</a></li>
+                    <li><a href="our-story.html#ingredients">Ingredients</a></li>
+                    <li><a href="#">Cocktail Recipes</a></li>
+                    <li><a href="#">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>Support</h4>
+                <ul>
+                    <li><a href="index.html#faq">FAQ</a></li>
+                    <li><a href="#">Shipping &amp; Returns</a></li>
+                    <li><a href="#">Contact Us</a></li>
+                    <li><a href="#">Wholesale</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Drink Bombs. All rights reserved. &nbsp;·&nbsp; <span style="color: var(--cosmo); font-weight: 700;">Woman-Owned &amp; Independently Made</span></p>
+            <div class="footer-social">
+                <a href="#" aria-label="Instagram">📷</a>
+                <a href="#" aria-label="TikTok">🎵</a>
+                <a href="#" aria-label="Twitter">🐦</a>
+                <a href="#" aria-label="Facebook">📘</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============ JAVASCRIPT ============ -->
+    <script>
+        // Reveal animations
+        const revealObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) entry.target.classList.add('visible');
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+        // Mobile nav toggle
+        const mobileToggle = document.querySelector('.nav-mobile-toggle');
+        const navLinks = document.querySelector('.nav-links');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', () => {
+                const isOpen = navLinks.style.display === 'flex';
+                navLinks.style.display = isOpen ? 'none' : 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '70px';
+                navLinks.style.left = '0';
+                navLinks.style.right = '0';
+                navLinks.style.background = '#FFFFFF';
+                navLinks.style.padding = '20px var(--side-pad)';
+                navLinks.style.borderBottom = '1px solid rgba(0,0,0,0.06)';
+                navLinks.style.gap = '16px';
+            });
+        }
+    </script>
+</body>
+</html>
